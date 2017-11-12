@@ -1,0 +1,4316 @@
+<html>
+	<script id="basic-shader-vs" type="x-shader/x-vertex">
+
+		attribute vec3 VertexPosition;
+		attribute vec2 TexcoordPosition;
+		
+		varying vec2 vTexcoordPosition;
+		varying vec4 vPosition;
+		
+		uniform mat4 uModelViewMatrix;
+		uniform mat4 uProjectionMatrix;
+
+		void main(void) {
+			vPosition = uModelViewMatrix * vec4(VertexPosition, 1.0);
+			gl_Position = uProjectionMatrix * vPosition;
+			vTexcoordPosition = TexcoordPosition;
+		}
+	</script>
+	
+	<script id="horizontal-blur-shader-vs" type="x-shader/x-vertex">
+		attribute vec3 VertexPosition;
+		attribute vec2 TexcoordPosition;
+		
+		varying vec2 vTexcoordPosition;
+		varying vec4 vPosition;
+		
+		uniform mat4 uModelViewMatrix;
+		uniform mat4 uProjectionMatrix;
+		
+		varying vec2 vBlurTexcoords[14];
+		
+		uniform float uStrength;
+		 
+		void main()
+		{
+			vPosition = uModelViewMatrix * vec4(VertexPosition, 1.0);
+			gl_Position = uProjectionMatrix * vPosition;
+			
+			vTexcoordPosition = TexcoordPosition;
+			vBlurTexcoords[ 0] = vTexcoordPosition + vec2(-0.028, 0.0)*uStrength;
+			vBlurTexcoords[ 1] = vTexcoordPosition + vec2(-0.024, 0.0)*uStrength;
+			vBlurTexcoords[ 2] = vTexcoordPosition + vec2(-0.020, 0.0)*uStrength;
+			vBlurTexcoords[ 3] = vTexcoordPosition + vec2(-0.016, 0.0)*uStrength;
+			vBlurTexcoords[ 4] = vTexcoordPosition + vec2(-0.012, 0.0)*uStrength;
+			vBlurTexcoords[ 5] = vTexcoordPosition + vec2(-0.008, 0.0)*uStrength;
+			vBlurTexcoords[ 6] = vTexcoordPosition + vec2(-0.004, 0.0)*uStrength;
+			vBlurTexcoords[ 7] = vTexcoordPosition + vec2( 0.004, 0.0)*uStrength;
+			vBlurTexcoords[ 8] = vTexcoordPosition + vec2( 0.008, 0.0)*uStrength;
+			vBlurTexcoords[ 9] = vTexcoordPosition + vec2( 0.012, 0.0)*uStrength;
+			vBlurTexcoords[10] = vTexcoordPosition + vec2( 0.016, 0.0)*uStrength;
+			vBlurTexcoords[11] = vTexcoordPosition + vec2( 0.020, 0.0)*uStrength;
+			vBlurTexcoords[12] = vTexcoordPosition + vec2( 0.024, 0.0)*uStrength;
+			vBlurTexcoords[13] = vTexcoordPosition + vec2( 0.028, 0.0)*uStrength;
+		}
+	</script>	
+	
+	<script id="vertical-blur-shader-vs" type="x-shader/x-vertex">
+		attribute vec3 VertexPosition;
+		attribute vec2 TexcoordPosition;
+		
+		varying vec2 vTexcoordPosition;
+		varying vec4 vPosition;
+		
+		uniform mat4 uModelViewMatrix;
+		uniform mat4 uProjectionMatrix;
+		
+		varying vec2 vBlurTexcoords[14];
+		
+		uniform float uStrength;
+		 
+		void main()
+		{
+			vPosition = uModelViewMatrix * vec4(VertexPosition, 1.0);
+			gl_Position = uProjectionMatrix * vPosition;
+			
+			vTexcoordPosition = TexcoordPosition;
+			vBlurTexcoords[ 0] = vTexcoordPosition + vec2(0.0, -0.028)*uStrength;
+			vBlurTexcoords[ 1] = vTexcoordPosition + vec2(0.0, -0.024)*uStrength;
+			vBlurTexcoords[ 2] = vTexcoordPosition + vec2(0.0, -0.020)*uStrength;
+			vBlurTexcoords[ 3] = vTexcoordPosition + vec2(0.0, -0.016)*uStrength;
+			vBlurTexcoords[ 4] = vTexcoordPosition + vec2(0.0, -0.012)*uStrength;
+			vBlurTexcoords[ 5] = vTexcoordPosition + vec2(0.0, -0.008)*uStrength;
+			vBlurTexcoords[ 6] = vTexcoordPosition + vec2(0.0, -0.004)*uStrength;
+			vBlurTexcoords[ 7] = vTexcoordPosition + vec2(0.0,  0.004)*uStrength;
+			vBlurTexcoords[ 8] = vTexcoordPosition + vec2(0.0,  0.008)*uStrength;
+			vBlurTexcoords[ 9] = vTexcoordPosition + vec2(0.0,  0.012)*uStrength;
+			vBlurTexcoords[10] = vTexcoordPosition + vec2(0.0,  0.016)*uStrength;
+			vBlurTexcoords[11] = vTexcoordPosition + vec2(0.0,  0.020)*uStrength;
+			vBlurTexcoords[12] = vTexcoordPosition + vec2(0.0,  0.024)*uStrength;
+			vBlurTexcoords[13] = vTexcoordPosition + vec2(0.0,  0.028)*uStrength;
+		}
+	</script>
+	
+	<script id="blur-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		 
+		uniform sampler2D uSampler0;
+		 
+		varying vec2 vTexcoordPosition;
+		varying vec2 vBlurTexcoords[14];
+		 
+		void main()
+		{
+			gl_FragColor = vec4(0.0);
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[ 0])*0.0044299121055113265;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[ 1])*0.00895781211794;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[ 2])*0.0215963866053;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[ 3])*0.0443683338718;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[ 4])*0.0776744219933;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[ 5])*0.115876621105;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[ 6])*0.147308056121;
+			gl_FragColor += texture2D(uSampler0, vTexcoordPosition         )*0.159576912161;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[ 7])*0.147308056121;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[ 8])*0.115876621105;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[ 9])*0.0776744219933;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[10])*0.0443683338718;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[11])*0.0215963866053;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[12])*0.00895781211794;
+			gl_FragColor += texture2D(uSampler0, vBlurTexcoords[13])*0.0044299121055113265;
+		}
+	</script>
+	
+	<script id="simple-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		
+		varying vec2 vTexcoordPosition;
+		
+		void main(void) {
+			gl_FragColor = texture2D(uSampler0, vTexcoordPosition);
+		}
+	</script>
+	
+	<script id="basic-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		
+		varying vec2 vTexcoordPosition;
+		
+		uniform float uBrightness;
+		uniform float uContrast;
+		uniform float uSaturation;
+		uniform vec3 uRGB;
+		uniform float uHueShift;
+		uniform float uGamma;
+		
+		vec3 rgb2hsv(vec3 c)
+		{
+			vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+			vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+			vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+			float d = q.x - min(q.w, q.y);
+			float e = 1.0e-10;
+			return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+		}
+		
+		vec3 hsv2rgb(vec3 c)
+		{
+			vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+			vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+			return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+		}
+		
+		void main(void) {
+			vec4 col = texture2D(uSampler0, vTexcoordPosition);
+			col.rgb = pow(col.rgb, vec3(uGamma));
+			col.rgb *= uContrast;
+			col.rgb += vec3(uBrightness, uBrightness, uBrightness);
+			vec3 hsv = rgb2hsv(col.rgb);
+			hsv.x += uHueShift;
+			hsv.y += uSaturation;
+			hsv.y = clamp(hsv.y, 0.0, 1.0);
+			if (hsv.x > 1.0)
+				hsv.x -= 1.0;
+			col.rgb = hsv2rgb(hsv);
+			col.rgb *= uRGB;
+			gl_FragColor = col;
+		}
+	</script>
+	
+	<script id="sepia-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		
+		varying vec2 vTexcoordPosition;
+		
+		uniform float uAmount;
+		
+		void main(void) {
+			vec4 col = texture2D(uSampler0, vTexcoordPosition);
+			
+			float r = col.r;
+            float g = col.g;
+            float b = col.b;
+            
+            col.r = min(1.0, (r * (1.0 - (0.607 * uAmount))) + (g * (0.769 * uAmount)) + (b * (0.189 * uAmount)));
+            col.g = min(1.0, (r * 0.349 * uAmount) + (g * (1.0 - (0.314 * uAmount))) + (b * 0.168 * uAmount));
+            col.b = min(1.0, (r * 0.272 * uAmount) + (g * 0.534 * uAmount) + (b * (1.0 - (0.869 * uAmount))));
+			
+			gl_FragColor = col;
+		}
+	</script>
+	
+	<script id="vibrance-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		
+		varying vec2 vTexcoordPosition;
+		
+		uniform float uAmount;
+		
+		void main(void) {
+			vec4 col = texture2D(uSampler0, vTexcoordPosition);
+			
+			float r = col.r;
+            float g = col.g;
+            float b = col.b;
+            
+            col.r = min(1.0, (r * (1.0 - (0.607 * uAmount))) + (g * (0.769 * uAmount)) + (b * (0.189 * uAmount)));
+            col.g = min(1.0, (r * 0.349 * uAmount) + (g * (1.0 - (0.314 * uAmount))) + (b * 0.168 * uAmount));
+            col.b = min(1.0, (r * 0.272 * uAmount) + (g * 0.534 * uAmount) + (b * (1.0 - (0.869 * uAmount))));
+			
+			gl_FragColor = col;
+		}
+	</script>
+	
+	<script id="frame-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		uniform sampler2D uSampler1;
+		
+		varying vec2 vTexcoordPosition;
+		
+		void main(void) {
+			vec4 col = texture2D(uSampler0, vTexcoordPosition);
+			vec3 col2 = texture2D(uSampler1, vTexcoordPosition).rgb;
+			if (col2 == vec3(0, 0, 0))
+				discard;
+			gl_FragColor = col;
+		}
+	</script>
+	
+	<script id="edge-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		
+		uniform sampler2D uSampler0; // 0
+		uniform float uVxOffset;
+		uniform float uVxOffset2;
+		uniform float uSamplerWidth; // GeeXLab built-in
+		uniform float uSamplerHeight; // GeeXLab built-in
+		
+		varying vec2 vTexcoordPosition;
+
+		mat3 G[2];
+		mat3 G2[9];
+
+
+		void main() 
+		{ 
+			G[0] = mat3( 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 );
+			G[1] = mat3( 1.0, 0.0, -1.0, 2.0, 0.0, -2.0, 1.0, 0.0, -1.0 );
+			
+			G2[0] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0 );
+			G2[1] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, 0.0, -1.0, sqrt(2.0), 0.0, -sqrt(2.0), 1.0, 0.0, -1.0 );
+			G2[2] = 1.0/(2.0*sqrt(2.0)) * mat3( 0.0, -1.0, sqrt(2.0), 1.0, 0.0, -1.0, -sqrt(2.0), 1.0, 0.0 );
+			G2[3] = 1.0/(2.0*sqrt(2.0)) * mat3( sqrt(2.0), -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, -sqrt(2.0) );
+			G2[4] = 1.0/2.0 * mat3( 0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0 );
+			G2[5] = 1.0/2.0 * mat3( -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0 );
+			G2[6] = 1.0/6.0 * mat3( 1.0, -2.0, 1.0, -2.0, 4.0, -2.0, 1.0, -2.0, 1.0 );
+			G2[7] = 1.0/6.0 * mat3( -2.0, 1.0, -2.0, 1.0, 4.0, 1.0, -2.0, 1.0, -2.0 );
+			G2[8] = 1.0/3.0 * mat3( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 );
+			
+			vec2 uv = vTexcoordPosition.xy;
+			vec3 tc = vec3(1.0, 0.0, 0.0);
+			float texelWidth = 1.0/uSamplerWidth;
+			float texelHeight = 1.0/uSamplerHeight;
+
+			if (uv.x < (uVxOffset-0.005))
+			{
+				mat3 I;
+				float cnv[2];
+				vec3 sample;
+				// fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value
+
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,-texelHeight)).rgb;
+				I[0][0] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,0)).rgb;
+				I[0][1] = length(sample);
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,texelHeight)).rgb;
+				I[0][2] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(0,-texelHeight)).rgb;
+				I[1][0] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition).rgb;
+				I[1][1] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(0,texelHeight)).rgb;
+				I[1][2] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,-texelHeight)).rgb;
+				I[2][0] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,0)).rgb;
+				I[2][1] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,texelHeight)).rgb;
+				I[2][2] = length(sample); 
+
+
+				// calculate the convolution values for all the masks
+				float dp3 = dot(G[0][0], I[0]) + dot(G[0][1], I[1]) + dot(G[0][2], I[2]);
+				cnv[0] = dp3 * dp3; 
+				dp3 = dot(G[1][0], I[0]) + dot(G[1][1], I[1]) + dot(G[1][2], I[2]);
+				cnv[1] = dp3 * dp3; 
+
+				tc = vec3(0.5 * sqrt(cnv[0]*cnv[0]+cnv[1]*cnv[1]));
+			}/*
+			else if ((uv.x >= (uVxOffset+0.005)) && (uv.x < (uVxOffset2-0.005)))
+			{
+				mat3 I;
+				float cnv[9];
+				vec3 sample;
+
+				// fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,-texelHeight)).rgb;
+				I[0][0] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,0)).rgb;
+				I[0][1] = length(sample);
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,texelHeight)).rgb;
+				I[0][2] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(0,-texelHeight)).rgb;
+				I[1][0] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition).rgb;
+				I[1][1] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(0,texelHeight)).rgb;
+				I[1][2] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,-texelHeight)).rgb;
+				I[2][0] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,0)).rgb;
+				I[2][1] = length(sample); 
+				
+				sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,texelHeight)).rgb;
+				I[2][2] = length(sample); 
+
+				// calculate the convolution values for all the masks 
+
+				float dp3 = dot(G2[0][0], I[0]) + dot(G2[0][1], I[1]) + dot(G2[0][2], I[2]);
+				cnv[0] = dp3 * dp3; 
+				
+				dp3 = dot(G2[1][0], I[0]) + dot(G2[1][1], I[1]) + dot(G2[1][2], I[2]);
+				cnv[1] = dp3 * dp3; 
+				
+				dp3 = dot(G2[2][0], I[0]) + dot(G2[2][1], I[1]) + dot(G2[2][2], I[2]);
+				cnv[2] = dp3 * dp3; 
+				
+				dp3 = dot(G2[3][0], I[0]) + dot(G2[3][1], I[1]) + dot(G2[3][2], I[2]);
+				cnv[3] = dp3 * dp3; 
+				
+				dp3 = dot(G2[4][0], I[0]) + dot(G2[4][1], I[1]) + dot(G2[4][2], I[2]);
+				cnv[4] = dp3 * dp3; 
+				
+				dp3 = dot(G2[5][0], I[0]) + dot(G2[5][1], I[1]) + dot(G2[5][2], I[2]);
+				cnv[5] = dp3 * dp3; 
+				
+				dp3 = dot(G2[6][0], I[0]) + dot(G2[6][1], I[1]) + dot(G2[6][2], I[2]);
+				cnv[6] = dp3 * dp3; 
+				
+				dp3 = dot(G2[7][0], I[0]) + dot(G2[7][1], I[1]) + dot(G2[7][2], I[2]);
+				cnv[7] = dp3 * dp3; 
+				
+				dp3 = dot(G2[8][0], I[0]) + dot(G2[8][1], I[1]) + dot(G2[8][2], I[2]);
+				cnv[8] = dp3 * dp3; 
+
+				float M = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]); // Edge detector
+				float S = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + (cnv[8] + M); 
+				//float M = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]); // Line detector
+				//float S = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]) + (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + cnv[8]; 
+
+				tc = vec3(sqrt(M/S));
+			}*/
+			else if (uv.x>=(uVxOffset2+0.005))
+			{
+				tc = texture2D(uSampler0, uv).rgb;
+			}
+			//tc = vec3(1, 0, 0);
+			gl_FragColor = vec4(tc, 1.0);
+		}
+	</script>
+	
+	<script id="multi-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		uniform sampler2D uSampler1;
+		
+		varying vec2 vTexcoordPosition;
+		
+		void main(void) {
+			vec4 col1 = texture2D(uSampler0, vTexcoordPosition) * 0.5;
+			vec4 col2 = texture2D(uSampler1, vTexcoordPosition) * 0.5;
+			gl_FragColor = col1 + col2;
+		}
+	</script>
+	
+	<script id="triangle-blur-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		
+		varying vec2 vTexcoordPosition;
+		
+        uniform vec2 uDelta;
+		
+		float random(vec3 scale, float seed) {
+			/* use the fragment position for a different seed per-pixel */
+			return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);
+		}
+		
+		void main() {
+            vec4 color = vec4(0.0);
+            float total = 0.0;
+            
+            /* randomize the lookup values to hide the fixed number of samples */
+            float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);
+            
+            for (float t = -30.0; t <= 30.0; t++) {
+                float percent = (t + offset - 0.5) / 30.0;
+                float weight = 1.0 - abs(percent);
+                vec4 sample = texture2D(uSampler0, vTexcoordPosition + uDelta * percent);
+                
+                /* switch to pre-multiplied alpha to correctly blur transparent images */
+                sample.rgb *= sample.a;
+                
+                color += sample * weight;
+                total += weight;
+            }
+            
+            gl_FragColor = color / total;
+            
+            /* switch back from pre-multiplied alpha */
+            gl_FragColor.rgb /= gl_FragColor.a + 0.00001;
+        }
+	</script>
+		
+	<script id="twirl-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		
+		uniform vec2 uTwirlCenter;
+		uniform float uAmount;
+		uniform float uRadius;
+		
+		varying vec2 vTexcoordPosition;
+		
+		void main(void) {
+			vec3 col = vec3(1., 0., 0.);
+			vec2 uv = vTexcoordPosition.st-uTwirlCenter;
+			float radius = length(uv);
+			if (radius <= uRadius){
+				float percent = (uRadius-radius)/uRadius;
+				float theta = percent*percent*uAmount*8.0;
+				float s = sin(theta);
+				float c = cos(theta);
+				uv = vec2(dot(uv, vec2(c, -s)), dot(uv, vec2(s, c)));	
+			}
+			uv += uTwirlCenter;
+			col = texture2D(uSampler0, uv).rgb;
+			gl_FragColor = vec4(col, 1.0);
+		}
+	</script>
+	
+	<script id="mirror-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		
+		uniform float uAngle;
+		uniform vec2 uMirrorCenter;
+		uniform float uDistance;
+		
+		varying vec2 vTexcoordPosition;
+		
+		void main(void) {
+			float radAngle= uAngle*3.1415/180.0;
+			vec2 mirrorNormal = vec2(sin(radAngle), cos(radAngle));
+			vec2 mirrorSurface = vec2(cos(radAngle), sin(radAngle));
+			vec2 fragmentVectorFromMirror = vTexcoordPosition - uMirrorCenter;
+			
+			vec2 uv = vec2(0, 0);
+			if (dot(normalize(fragmentVectorFromMirror), mirrorNormal) < 0.0)
+				uv = -reflect(-fragmentVectorFromMirror, mirrorNormal) + uMirrorCenter;
+				//uv = reflect(-fragmentVectorFromMirror, mirrorSurface) + uMirrorCenter;
+			else
+				uv = vTexcoordPosition;
+			
+			vec3 col = texture2D(uSampler0, uv).rgb;
+			gl_FragColor = vec4(col, 1.0);
+		}
+	</script>
+	
+	<script id="focus-blur-shader-fs" type="x-shader/x-fragment">
+	
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		varying vec2 vTexcoordPosition;
+		uniform float uDistance; // 1.0
+		uniform float uStrength; // 2.2
+		uniform vec2 uCenter;
+
+		void main(void)
+		{
+			float samples[10];
+			samples[0] = -0.08;
+			samples[1] = -0.05;
+			samples[2] = -0.03;
+			samples[3] = -0.02;
+			samples[4] = -0.01;
+			samples[5] =  0.01;
+			samples[6] =  0.02;
+			samples[7] =  0.03;
+			samples[8] =  0.05;
+			samples[9] =  0.08;
+
+			vec2 dir = uCenter - vTexcoordPosition; 
+			float dist = sqrt(dir.x*dir.x + dir.y*dir.y); 
+			dir = dir/dist; 
+
+			vec4 color = texture2D(uSampler0, vTexcoordPosition); 
+			vec4 sum = color;
+
+			for (int i = 0; i < 10; i++)
+				sum += texture2D( uSampler0, vTexcoordPosition + dir * samples[i] * uDistance );
+
+			sum *= 1.0/11.0;
+			float t = dist * uStrength;
+			t = clamp( t ,0.0,1.0);
+
+			gl_FragColor = mix( color, sum, t );
+		}
+	</script>
+	
+	<script id="tone-curve-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		uniform sampler2D uSampler1; // map
+		
+		varying vec2 vTexcoordPosition;
+		
+		void main()
+		{
+			vec4 color=texture2D(uSampler0,vTexcoordPosition);
+			color.r=texture2D(uSampler1,vec2(color.r)).r;
+			color.g=texture2D(uSampler1,vec2(color.g)).g;
+			color.b=texture2D(uSampler1,vec2(color.b)).b;
+			
+			gl_FragColor=color;
+		}
+	</script>
+	
+	<script id="tone-map-creation-shader-fs" type="x-shader/x-fragment">
+		#define RED_SPLINES_MAX 5
+		#define GREEN_SPLINES_MAX 5
+		#define BLUE_SPLINES_MAX 5
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		
+		uniform vec2 uRedSplines[RED_SPLINES_MAX];
+		uniform vec2 uGreenSplines[GREEN_SPLINES_MAX];
+		uniform vec2 uBlueSplines[BLUE_SPLINES_MAX];
+		uniform int uRedSplinesCount;
+		uniform int uGreenSplinesCount;
+		uniform int uBlueSplinesCount;
+		
+		varying vec2 vTexcoordPosition;
+		
+		void main(void) {
+			vec3 col = vec3(-1.0, -1.0, -1.0);
+			vec2 lastVal = vec2(0, 0);
+			for (int i = 0; i < RED_SPLINES_MAX; i ++){
+				if (i >= uRedSplinesCount)
+					break;
+				if (vTexcoordPosition.s <= uRedSplines[i].s){
+					vec2 newVal = uRedSplines[i];
+					col.r = mix(lastVal.t, newVal.t, (vTexcoordPosition.s - lastVal.s)/(newVal.s - lastVal.s));
+					break;
+				}else{
+					lastVal = uRedSplines[i];
+				}
+			}
+			if (col.r == -1.0)
+				col.r = lastVal.t;
+			
+			lastVal = vec2(0, 0);
+			for (int i = 0; i < GREEN_SPLINES_MAX; i ++){
+				if (i >= uGreenSplinesCount)
+					break;
+				if (vTexcoordPosition.s <= uGreenSplines[i].s){
+					vec2 newVal = uGreenSplines[i];
+					col.g = mix(lastVal.t, newVal.t, (vTexcoordPosition.s - lastVal.s)/(newVal.s - lastVal.s));
+					break;
+				}else{
+					lastVal = uGreenSplines[i];
+				}
+			}
+			if (col.g == -1.0)
+				col.g = lastVal.t;
+			
+			lastVal = vec2(0, 0);
+			for (int i = 0; i < BLUE_SPLINES_MAX; i ++){
+				if (i >= uBlueSplinesCount)
+					break;
+				if (vTexcoordPosition.s <= uBlueSplines[i].s){
+					vec2 newVal = uBlueSplines[i];
+					col.b = mix(lastVal.t, newVal.t, (vTexcoordPosition.s - lastVal.s)/(newVal.s - lastVal.s));
+					break;
+				}else{
+					lastVal = uBlueSplines[i];
+				}
+			}
+			if (col.b == -1.0)
+				col.b = lastVal.t;
+			gl_FragColor = vec4(col, 1.0);
+		}
+	</script>
+	
+	<script id="greyscale-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		
+		uniform vec3 uRGB;
+		uniform float uHSVPointer;
+		uniform float uHSVWidth;
+		
+		varying vec2 vTexcoordPosition;
+		
+		vec3 rgb2hsv(vec3 c)
+		{
+			vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+			vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+			vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+			float d = q.x - min(q.w, q.y);
+			float e = 1.0e-10;
+			return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+		}
+		
+		vec3 hsv2rgb(vec3 c)
+		{
+			vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+			vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+			return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+		}
+		
+		void main(void) {
+			vec4 col = texture2D(uSampler0, vTexcoordPosition);
+			vec3 hsv = rgb2hsv(col.rgb);
+			
+			float fromPoint = uHSVPointer - uHSVWidth/2.0;
+			float toPoint = uHSVPointer + uHSVWidth/2.0;
+			
+			if (fromPoint < 0.0)
+				fromPoint += 1.0;
+			if (toPoint > 1.0)
+				toPoint -= 1.0;
+			bool cond;
+			if (toPoint > fromPoint){
+				cond = (hsv.x >= fromPoint && hsv.x <= toPoint) && uHSVWidth != 0.0;
+			}else{
+				cond = !(hsv.x > toPoint && hsv.x < fromPoint) && uHSVWidth != 0.0;
+			}
+			
+			
+			if (cond)
+				gl_FragColor = col;
+			else{
+				float avg = (col.r + col.g + col.b)/3.0;
+				col.rgb = vec3(avg, avg, avg);
+				col.rgb *= uRGB;
+				gl_FragColor = col;
+			}
+		}
+	</script>
+	
+	<script id="lighted-shader-vs" type="x-shader/x-vertex">
+
+		attribute vec3 VertexPosition;
+		attribute vec2 TexcoordPosition;
+		
+		varying vec2 vTexcoordPosition;
+		varying vec4 vPosition;
+		varying vec4 vNormal;
+		varying mat4 vNormalMatrix;
+		
+		uniform mat4 uModelViewMatrix;
+		uniform mat4 uProjectionMatrix;
+		uniform mat4 uNormalMatrix;
+
+		void main(void) {
+			vPosition = uModelViewMatrix * vec4(VertexPosition, 1.0);
+			gl_Position = uProjectionMatrix * vPosition;
+			vNormal = uNormalMatrix * vec4(0, 0, 1, 0);
+			vTexcoordPosition = TexcoordPosition;
+			vNormalMatrix = uNormalMatrix;
+		}
+	</script>
+	
+	<script id="lighted-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		
+		uniform float uLightIntensity;
+		uniform vec3 uLightPosition;
+		uniform vec3 uLightAmbient;
+		uniform vec3 uLightDiffuse;
+		uniform vec3 uLightSpecular;
+		uniform float uMaterialShininess;
+		uniform float uDoSpecularCalculation;
+		uniform float uSamplerWidth;
+		uniform float uSamplerHeight;
+		varying vec2 vTexcoordPosition;
+		varying vec4 vPosition;
+		varying vec4 vNormal;
+		
+		void main(void) {
+			vec4 col = texture2D(uSampler0, vTexcoordPosition);
+			float distanceFromLight = length(vPosition.xyz-uLightPosition);
+			float attenuation = 1.0/(1.0/uLightIntensity+ 1.0/(uLightIntensity*distanceFromLight) + 1.0/(uLightIntensity*distanceFromLight*distanceFromLight));
+			
+			vec3 surfaceToLight = normalize(uLightPosition - vPosition.xyz);
+			vec3 cameraToSurface = normalize(vec3(uSamplerWidth/2.0, uSamplerHeight/2.0, 10)-vPosition.xyz);
+			
+			vec3 normal = normalize(vNormal.xyz);
+			float diffuseCont = max(dot(normal, surfaceToLight), 0.0);
+			float specularCont = max(dot(cameraToSurface, -reflect(surfaceToLight, normal)), 0.0);
+			specularCont = pow(specularCont, uMaterialShininess);
+			
+			specularCont *= uDoSpecularCalculation;
+			
+			vec3 ambient = uLightAmbient * col.xyz;
+			vec3 diffuse = (uLightDiffuse * col.xyz) * diffuseCont;
+			vec3 specular = (uLightSpecular * col.xyz) * specularCont;
+			
+			gl_FragColor = vec4(ambient+(diffuse+specular)*attenuation, col.a);
+		}
+	</script>
+	
+	<script id="lighted-normalmap-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		uniform sampler2D uSampler1;
+		
+		varying mat4 vNormalMatrix;
+		
+		uniform float uLightIntensity;
+		uniform vec3 uLightPosition;
+		uniform vec3 uLightAmbient;
+		uniform vec3 uLightDiffuse;
+		uniform vec3 uLightSpecular;
+		uniform float uMaterialShininess;
+		uniform float uDoSpecularCalculation;
+		
+		varying vec2 vTexcoordPosition;
+		varying vec4 vPosition;
+		varying vec4 vNormal;
+		
+		void main(void) {
+			vec4 col = texture2D(uSampler0, vTexcoordPosition);
+			float distanceFromLight = length(vPosition.xyz-uLightPosition);
+			float attenuation = 1.0/(1.0/uLightIntensity+ 1.0/(uLightIntensity*distanceFromLight) + 1.0/(uLightIntensity*distanceFromLight*distanceFromLight));
+			attenuation = 1.0;
+			
+			vec3 surfaceToLight = normalize(uLightPosition - vPosition.xyz);
+			vec3 cameraToSurface = normalize(vec3(512, 512, 10) - vPosition.xyz);
+			
+			vec3 normal = normalize(((texture2D(uSampler1, vTexcoordPosition)*2.0-vec4(1.0, 1.0, 1.0, 1.0))).xyz);
+			normal.y *= -1.0; // because textures get reversed in y direction
+			float diffuseCont = max(dot(normal, surfaceToLight), 0.0);
+			float specularCont = max(dot(cameraToSurface, -reflect(surfaceToLight, normal)), 0.0);
+			specularCont = pow(specularCont, uMaterialShininess);
+			
+			specularCont *= uDoSpecularCalculation;
+			
+			vec3 ambient = uLightAmbient * col.xyz;
+			vec3 diffuse = (uLightDiffuse * col.xyz) * diffuseCont;
+			vec3 specular = (uLightSpecular * col.xyz) * specularCont;
+			
+			gl_FragColor = vec4(ambient+(diffuse+specular)*attenuation, col.a);
+		}
+	</script>
+	
+	<script id="sharpen-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		uniform sampler2D uSampler0;
+		varying vec2 vTexcoordPosition;
+		uniform float uSamplerWidth;
+		uniform float uSamplerHeight;
+		uniform float uSharpenAmount;
+		void main(){
+			float texelWidth = 1.0/uSamplerWidth;
+			float texelHeight = 1.0/uSamplerHeight;
+			vec2 singleStepOffset = vec2(texelWidth, texelHeight);
+			vec4 sum = vec4(0,0,0,0);
+			vec2 up = vec2(0.0, texelHeight);
+			vec2 left = vec2(texelWidth, 0.0);
+			sum += texture2D(uSampler0, vTexcoordPosition) * (1.0 + 4.0 * uSharpenAmount);
+			sum += texture2D(uSampler0, vTexcoordPosition + up) * -uSharpenAmount;
+			sum += texture2D(uSampler0, vTexcoordPosition - up) * -uSharpenAmount;
+			sum += texture2D(uSampler0, vTexcoordPosition + left) * -uSharpenAmount;
+			sum += texture2D(uSampler0, vTexcoordPosition - left) * -uSharpenAmount;
+			gl_FragColor = sum;
+		}
+	</script>
+	
+	<script id="vignette-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		uniform sampler2D uSampler0;
+		varying vec2 vTexcoordPosition;
+		uniform vec2 uCenter;
+		uniform vec3 uColor;
+		uniform float uStart;
+		uniform float uRange;
+		void main(){
+			lowp vec4 color = texture2D(uSampler0, vTexcoordPosition);
+			mediump float d = distance(vTexcoordPosition, uCenter);
+			lowp float percent = smoothstep(uStart, uStart+uRange, d);
+			gl_FragColor = vec4(mix(color.rgb, uColor, percent), color.a);
+		}
+	</script>
+	
+	<script id="highlight-shadow-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		uniform sampler2D uSampler0;
+		uniform float uHighlight;
+		uniform float uShadow;
+		varying vec2 vTexcoordPosition;
+		const vec3 luminanceWeighting = vec3(0.3, 0.3, 0.3);
+		void main(){
+			vec4 texColour = texture2D(uSampler0,vTexcoordPosition);
+			float luminance = dot(texColour.rgb, luminanceWeighting);
+			float s = clamp((pow(luminance, 1.0/(uShadow+1.0)) + (-0.76)*pow(luminance, 2.0/(uShadow+1.0))) - luminance, 0.0, 1.0);
+			float h = clamp((1.0 - (pow(1.0-luminance, 1.0/(2.0-uHighlight)) + (-0.8)*pow(1.0-luminance, 2.0/(2.0-uHighlight)))) - luminance, -1.0, 0.0);
+			vec3 result = vec3(0.0, 0.0, 0.0) + ((luminance + s + h) - 0.0) * ((texColour.rgb - vec3(0.0, 0.0, 0.0))/(luminance - 0.0));
+			gl_FragColor = vec4(result, texColour.a);
+		}
+	</script>
+	
+	<script id="monochrome-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		uniform sampler2D uSampler0;
+		varying vec2 vTexcoordPosition;
+		uniform float uIntensity;
+		uniform vec3 uColor;
+		vec3 luminanceWeighting = vec3(0.2125, 0.7154, 0.0721);
+		void main(){
+			vec4 color = texture2D(uSampler0,vTexcoordPosition);
+			float luminance =  dot(color.rgb, luminanceWeighting);
+			vec4 desat = vec4(vec3(luminance), 1.0);
+			vec4 outputColour = vec4(
+				(desat.r < 0.5 ? (2.0 * desat.r * uColor.r) : (1.0 - 2.0 * (1.0 - desat.r) * (1.0 - uColor.r))),
+				(desat.g < 0.5 ? (2.0 * desat.g * uColor.g) : (1.0 - 2.0 * (1.0 - desat.g) * (1.0 - uColor.g))),
+				(desat.b < 0.5 ? (2.0 * desat.b * uColor.b) : (1.0 - 2.0 * (1.0 - desat.b) * (1.0 - uColor.b))),
+				1.0
+			);
+			gl_FragColor = vec4(mix(color.rgb, outputColour.rgb, uIntensity), color.a);
+		}
+	</script>
+	
+	<script id="overlay-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		uniform sampler2D uSampler1;
+		uniform float uAmount;
+		uniform int uType;
+		
+		varying vec2 vTexcoordPosition;
+		
+		vec3 multiply(vec3 col1, vec3 col2)
+		{
+			return col1*col2*vec3(uAmount);
+		}
+		
+		vec3 add(vec3 col1, vec3 col2)
+		{
+			return vec3(max(col1.r+col2.r*uAmount, 1.),
+						max(col1.g+col2.g*uAmount, 1.),
+						max(col1.b+col2.b*uAmount, 1.) 
+						);
+		}
+		
+		vec3 subtract(vec3 col1, vec3 col2)
+		{
+			return vec3(abs(col1.r-col2.r*uAmount),
+						abs(col1.g-col2.g*uAmount),
+						abs(col1.b-col2.b*uAmount));
+		}
+		
+		vec3 blend(vec3 col1, vec3 col2)
+		{
+			return mix(col1, col2, uAmount);
+		}
+		
+		vec3 materialize(vec3 col1, vec3 col2)
+		{
+			return vec3(1.0)-((vec3(1.0, 1.0, 1.0)-(col1*uAmount))*col2);
+		}
+		
+		void main(void) {
+			vec3 col1 = texture2D(uSampler0, vTexcoordPosition).rgb;
+			vec3 col2 = texture2D(uSampler1, vTexcoordPosition).rgb;
+			vec3 col = vec3(1, 0, 0);
+			if (uType == 0)
+				col = add(col1, col2);
+			if (uType == 1)
+				col = subtract(col1, col2);
+			if (uType == 2)
+				col = multiply(col1, col2);
+			if (uType == 3)
+				col = blend(col1, col2);
+			if (uType == 4)
+				col = materialize(col1, col2);
+			gl_FragColor = vec4(col, 1.0);
+		}
+	</script>
+	
+	<script id="barrel-distortion-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		uniform float uBarrelPower;
+		uniform vec2 uDistortCenter;
+		
+		const float PI = 3.1415926535;
+		
+		varying vec2 vTexcoordPosition;
+		
+		vec2 Distort(vec2 p)
+		{
+			float theta  = atan(p.y, p.x);
+			float radius = length(p);
+			radius = pow(radius, uBarrelPower);
+			p.x = radius * cos(theta);
+			p.y = radius * sin(theta);
+			return 0.5 * (p + 1.0);
+		}
+		 
+		void main()
+		{
+		  vec2 xy = (2.0 * vTexcoordPosition.xy - 1.0)-uDistortCenter+vec2(0.5, 0.5);
+		  vec2 uv;
+		  float d = length(xy);
+		  if (d < 1.0)
+		  {
+			uv = Distort(xy);
+		  }
+		  else
+		  {
+			uv = vTexcoordPosition.xy;
+		  }
+		  vec4 c = texture2D(uSampler0, uv);
+		  gl_FragColor = c;
+		}
+	</script>
+	
+	<script id="fish-eye-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		uniform float uAperture; //178
+		uniform vec2 uDistortCenter;
+		
+		const float PI = 3.1415926535;
+		
+		varying vec2 vTexcoordPosition;
+				 
+		void main()
+		{
+		  float apertureHalf = 0.5 * uAperture * (PI / 180.0);
+		  float maxFactor = sin(apertureHalf);
+		  
+		  vec2 uv;
+		  vec2 xy = (2.0 * vTexcoordPosition.xy - 1.0) - uDistortCenter + vec2(0.5, 0.5);
+		  float d = length(xy);
+		  if (d < (2.0-maxFactor))
+		  {
+			d = length(xy * maxFactor);
+			float z = sqrt(1.0 - d * d);
+			float r = atan(d, z) / PI;
+			float phi = atan(xy.y, xy.x);
+			
+			uv.x = r * cos(phi) + 0.5;
+			uv.y = r * sin(phi) + 0.5;
+		  }
+		  else
+		  {
+			uv = vTexcoordPosition.xy;
+		  }
+		  vec4 c = texture2D(uSampler0, uv);
+		  gl_FragColor = c;
+		}
+	</script>
+
+<script id="toon-2-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		uniform float uEdgeThreshold; // 0.2;
+		uniform float uSamplerWidth;
+		uniform float uSamplerHeight;
+		
+		const float PI = 3.1415926535;
+		
+		varying vec2 vTexcoordPosition;
+			
+		#define HueLevCount 10
+		#define SatLevCount 7
+		#define ValLevCount 4
+		float HueLevels[HueLevCount];
+		float SatLevels[SatLevCount];
+		float ValLevels[ValLevCount];
+		 
+		vec3 rgb2hsv(vec3 c)
+		{
+			vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+			vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+			vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+			float d = q.x - min(q.w, q.y);
+			float e = 1.0e-10;
+			return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+		}
+		
+		vec3 hsv2rgb(vec3 c)
+		{
+			vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+			vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+			return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+		}
+		
+		float nearestHue(float col)
+		{
+			for (int i =1; i<HueLevCount; i++ ) {
+				if (col >= HueLevels[i-1] && col <= HueLevels[i]) {
+					return HueLevels[i];
+				}
+			}
+			return 1.0;
+		}
+		
+		float nearestSaturation(float col)
+		{
+			for (int i =0; i < SatLevCount-1; i++ ) {
+				if (col >= 0.166 * float(i) && col <= float(i+1) * 0.166) {
+				  return float(i+1) * 0.166;
+				}
+			}
+			return 1.0;
+		}
+		
+		float nearestValue(float col)
+		{
+			for (int i =0; i < ValLevCount-1; i++ ) {
+				if (col >= 0.33* float(i) && col <= 0.33*float(i+1)) {
+					return 0.33*float(i+1);
+				}
+			}
+			return 1.0;
+		}
+		
+		 
+		// averaged pixel intensity from 3 color channels
+		float avg_intensity(vec4 pix) 
+		{
+		 return (pix.r + pix.g + pix.b)/3.;
+		}
+		 
+		vec4 get_pixel(vec2 coords, float dx, float dy) 
+		{
+		 return texture2D(uSampler0,coords + vec2(dx, dy));
+		}
+		 
+		// returns pixel color
+		float IsEdge(vec2 coords)
+		{
+		  float dxtex = 1.0 /float(uSamplerWidth) ;
+		  float dytex = 1.0 /float(uSamplerHeight);
+		  float pix[9];
+		  int k = -1;
+		  float delta;
+		 
+		  pix[0] = avg_intensity(get_pixel(coords,-1.0*dxtex,-1.0*dytex));
+		  pix[1] = avg_intensity(get_pixel(coords,-1.0*dxtex,0.0));
+		  pix[2] = avg_intensity(get_pixel(coords,-1.0*dxtex,1.0*dytex));
+		  pix[3] = avg_intensity(get_pixel(coords,0.0*dxtex,-1.0*dytex));
+		  pix[4] = avg_intensity(get_pixel(coords,0.0,0.0*dytex));
+		  pix[5] = avg_intensity(get_pixel(coords,0.0,1.0*dytex));
+		  pix[6] = avg_intensity(get_pixel(coords,1.0*dxtex,-1.0*dytex));
+		  pix[7] = avg_intensity(get_pixel(coords,1.0*dxtex,0.0));
+		  pix[8] = avg_intensity(get_pixel(coords,1.0*dxtex,1.0*dytex));
+		 
+		  // average color differences around neighboring pixels
+		  delta = (abs(pix[1]-pix[7])+
+				  abs(pix[5]-pix[3]) +
+				  abs(pix[0]-pix[8])+
+				  abs(pix[2]-pix[6])
+				   )/4.;
+		 
+		  return clamp(5.5*delta,0.0,1.0);
+		  //return clamp(uEdgeThreshold2*delta,0.0,1.0);
+		}
+		 
+		void main()
+		{
+			HueLevels[0] = 0.0;
+			HueLevels[1] = 30.0/360.;
+			HueLevels[2] = 140.0/360.;
+			HueLevels[3] = 160.0/360.;
+			HueLevels[4] = 240.0/360.;
+			HueLevels[5] = 240.0/360.;
+			HueLevels[6] = 360.0/360.;
+
+		
+			vec2 uv = vTexcoordPosition.xy;
+			vec4 tc = vec4(1.0, 0.0, 0.0, 1.0);
+
+			vec3 colorOrg = texture2D(uSampler0, uv).rgb;
+			vec3 vHSV =  rgb2hsv(vec3(colorOrg.r,colorOrg.g,colorOrg.b));
+			vHSV.x = nearestHue(vHSV.x);
+			vHSV.y = nearestSaturation(vHSV.y);
+			vHSV.z = nearestValue(vHSV.z);
+			float edg = IsEdge(uv);
+			vec3 vRGB = (edg >= uEdgeThreshold)? vec3(0.0,0.0,0.0):hsv2rgb(vec3(vHSV.x,vHSV.y,vHSV.z));
+			tc = vec4(vRGB.x,vRGB.y,vRGB.z, 1);  
+
+			gl_FragColor = tc;
+		}
+	</script>
+	
+	<script id="toon-greenish-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		uniform float uEdgeThreshold; // 0.2;
+		uniform float uSamplerWidth;
+		uniform float uSamplerHeight;
+		
+		const float PI = 3.1415926535;
+		
+		varying vec2 vTexcoordPosition;
+			
+		#define HueLevCount 6
+		#define SatLevCount 7
+		#define ValLevCount 4
+		float HueLevels[HueLevCount];
+		float SatLevels[SatLevCount];
+		float ValLevels[ValLevCount];
+		 
+		vec3 rgb2hsv(vec3 c)
+		{
+			vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+			vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+			vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+			float d = q.x - min(q.w, q.y);
+			float e = 1.0e-10;
+			return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+		}
+		
+		vec3 hsv2rgb(vec3 c)
+		{
+			vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+			vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+			return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+		}
+		
+		float nearestHue(float col)
+		{
+			for (int i =1; i<HueLevCount; i++ ) {
+				if (col >= HueLevels[i-1] && col <= HueLevels[i]) {
+					return HueLevels[i];
+				}
+			}
+			return col;
+		}
+		
+		float nearestSaturation(float col)
+		{
+			for (int i =0; i < SatLevCount-1; i++ ) {
+				if (col >= 0.166 * float(i) && col <= float(i+1) * 0.166) {
+				  return float(i+1) * 0.166;
+				}
+			}
+			return col;
+		}
+		
+		float nearestValue(float col)
+		{
+			for (int i =0; i < ValLevCount-1; i++ ) {
+				if (col >= 0.33* float(i) && col <= 0.33*float(i+1)) {
+					return 0.33*float(i+1);
+				}
+			}
+			return col;
+		}
+		
+		 
+		// averaged pixel intensity from 3 color channels
+		float avg_intensity(vec4 pix) 
+		{
+		 return (pix.r + pix.g + pix.b)/3.;
+		}
+		 
+		vec4 get_pixel(vec2 coords, float dx, float dy) 
+		{
+		 return texture2D(uSampler0,coords + vec2(dx, dy));
+		}
+		 
+		// returns pixel color
+		float IsEdge(vec2 coords)
+		{
+		  float dxtex = 1.0 /float(uSamplerWidth) ;
+		  float dytex = 1.0 /float(uSamplerHeight);
+		  float pix[9];
+		  int k = -1;
+		  float delta;
+		 
+		  pix[0] = avg_intensity(get_pixel(coords,-1.0*dxtex,-1.0*dytex));
+		  pix[1] = avg_intensity(get_pixel(coords,-1.0*dxtex,0.0));
+		  pix[2] = avg_intensity(get_pixel(coords,-1.0*dxtex,1.0*dytex));
+		  pix[3] = avg_intensity(get_pixel(coords,0.0*dxtex,-1.0*dytex));
+		  pix[4] = avg_intensity(get_pixel(coords,0.0,0.0*dytex));
+		  pix[5] = avg_intensity(get_pixel(coords,0.0,1.0*dytex));
+		  pix[6] = avg_intensity(get_pixel(coords,1.0*dxtex,-1.0*dytex));
+		  pix[7] = avg_intensity(get_pixel(coords,1.0*dxtex,0.0));
+		  pix[8] = avg_intensity(get_pixel(coords,1.0*dxtex,1.0*dytex));
+		 
+		  // average color differences around neighboring pixels
+		  delta = (abs(pix[1]-pix[7])+
+				  abs(pix[5]-pix[3]) +
+				  abs(pix[0]-pix[8])+
+				  abs(pix[2]-pix[6])
+				   )/4.;
+		 
+		  return clamp(5.5*delta,0.0,1.0);
+		  //return clamp(uEdgeThreshold2*delta,0.0,1.0);
+		}
+		
+		
+		float IsEdge2(in vec2 coords)
+		{
+			mat3 G[2];
+			mat3 G2[9];
+
+			G[0] = mat3( 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 );
+			G[1] = mat3( 1.0, 0.0, -1.0, 2.0, 0.0, -2.0, 1.0, 0.0, -1.0 );
+			
+			G2[0] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0 );
+			G2[1] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, 0.0, -1.0, sqrt(2.0), 0.0, -sqrt(2.0), 1.0, 0.0, -1.0 );
+			G2[2] = 1.0/(2.0*sqrt(2.0)) * mat3( 0.0, -1.0, sqrt(2.0), 1.0, 0.0, -1.0, -sqrt(2.0), 1.0, 0.0 );
+			G2[3] = 1.0/(2.0*sqrt(2.0)) * mat3( sqrt(2.0), -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, -sqrt(2.0) );
+			G2[4] = 1.0/2.0 * mat3( 0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0 );
+			G2[5] = 1.0/2.0 * mat3( -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0 );
+			G2[6] = 1.0/6.0 * mat3( 1.0, -2.0, 1.0, -2.0, 4.0, -2.0, 1.0, -2.0, 1.0 );
+			G2[7] = 1.0/6.0 * mat3( -2.0, 1.0, -2.0, 1.0, 4.0, 1.0, -2.0, 1.0, -2.0 );
+			G2[8] = 1.0/3.0 * mat3( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 );
+			
+			float texelWidth = 1.0/uSamplerWidth;
+			float texelHeight = 1.0/uSamplerHeight;
+
+			mat3 I;
+			float cnv[2];
+			vec3 sample;
+			// fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value
+
+			sample = texture2D(uSampler0, coords + vec2(-texelWidth,-texelHeight)).rgb;
+			I[0][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(-texelWidth,0)).rgb;
+			I[0][1] = length(sample);
+			
+			sample = texture2D(uSampler0, coords + vec2(-texelWidth,texelHeight)).rgb;
+			I[0][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(0,-texelHeight)).rgb;
+			I[1][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords).rgb;
+			I[1][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(0,texelHeight)).rgb;
+			I[1][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(texelWidth,-texelHeight)).rgb;
+			I[2][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(texelWidth,0)).rgb;
+			I[2][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(texelWidth,texelHeight)).rgb;
+			I[2][2] = length(sample); 
+
+
+			// calculate the convolution values for all the masks
+			float dp3 = dot(G[0][0], I[0]) + dot(G[0][1], I[1]) + dot(G[0][2], I[2]);
+			cnv[0] = dp3 * dp3; 
+			dp3 = dot(G[1][0], I[0]) + dot(G[1][1], I[1]) + dot(G[1][2], I[2]);
+			cnv[1] = dp3 * dp3; 
+
+			return 0.5 * sqrt(cnv[0]*cnv[0]+cnv[1]*cnv[1]);
+		}
+			
+		float IsEdge3(in vec2 coords)
+		{
+			mat3 G[2];
+			mat3 G2[9];
+
+			G[0] = mat3( 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 );
+			G[1] = mat3( 1.0, 0.0, -1.0, 2.0, 0.0, -2.0, 1.0, 0.0, -1.0 );
+			
+			G2[0] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0 );
+			G2[1] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, 0.0, -1.0, sqrt(2.0), 0.0, -sqrt(2.0), 1.0, 0.0, -1.0 );
+			G2[2] = 1.0/(2.0*sqrt(2.0)) * mat3( 0.0, -1.0, sqrt(2.0), 1.0, 0.0, -1.0, -sqrt(2.0), 1.0, 0.0 );
+			G2[3] = 1.0/(2.0*sqrt(2.0)) * mat3( sqrt(2.0), -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, -sqrt(2.0) );
+			G2[4] = 1.0/2.0 * mat3( 0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0 );
+			G2[5] = 1.0/2.0 * mat3( -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0 );
+			G2[6] = 1.0/6.0 * mat3( 1.0, -2.0, 1.0, -2.0, 4.0, -2.0, 1.0, -2.0, 1.0 );
+			G2[7] = 1.0/6.0 * mat3( -2.0, 1.0, -2.0, 1.0, 4.0, 1.0, -2.0, 1.0, -2.0 );
+			G2[8] = 1.0/3.0 * mat3( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 );
+			
+			float texelWidth = 1.0/uSamplerWidth;
+			float texelHeight = 1.0/uSamplerHeight;
+
+			mat3 I;
+			float cnv[9];
+			vec3 sample;
+
+			// fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,-texelHeight)).rgb;
+			I[0][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,0)).rgb;
+			I[0][1] = length(sample);
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,texelHeight)).rgb;
+			I[0][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0,-texelHeight)).rgb;
+			I[1][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition).rgb;
+			I[1][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0,texelHeight)).rgb;
+			I[1][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,-texelHeight)).rgb;
+			I[2][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,0)).rgb;
+			I[2][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,texelHeight)).rgb;
+			I[2][2] = length(sample); 
+
+			// calculate the convolution values for all the masks 
+
+			float dp3 = dot(G2[0][0], I[0]) + dot(G2[0][1], I[1]) + dot(G2[0][2], I[2]);
+			cnv[0] = dp3 * dp3; 
+			
+			dp3 = dot(G2[1][0], I[0]) + dot(G2[1][1], I[1]) + dot(G2[1][2], I[2]);
+			cnv[1] = dp3 * dp3; 
+			
+			dp3 = dot(G2[2][0], I[0]) + dot(G2[2][1], I[1]) + dot(G2[2][2], I[2]);
+			cnv[2] = dp3 * dp3; 
+			
+			dp3 = dot(G2[3][0], I[0]) + dot(G2[3][1], I[1]) + dot(G2[3][2], I[2]);
+			cnv[3] = dp3 * dp3; 
+			
+			dp3 = dot(G2[4][0], I[0]) + dot(G2[4][1], I[1]) + dot(G2[4][2], I[2]);
+			cnv[4] = dp3 * dp3; 
+			
+			dp3 = dot(G2[5][0], I[0]) + dot(G2[5][1], I[1]) + dot(G2[5][2], I[2]);
+			cnv[5] = dp3 * dp3; 
+			
+			dp3 = dot(G2[6][0], I[0]) + dot(G2[6][1], I[1]) + dot(G2[6][2], I[2]);
+			cnv[6] = dp3 * dp3; 
+			
+			dp3 = dot(G2[7][0], I[0]) + dot(G2[7][1], I[1]) + dot(G2[7][2], I[2]);
+			cnv[7] = dp3 * dp3; 
+			
+			dp3 = dot(G2[8][0], I[0]) + dot(G2[8][1], I[1]) + dot(G2[8][2], I[2]);
+			cnv[8] = dp3 * dp3; 
+
+			float M = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]); // Edge detector
+			float S = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + (cnv[8] + M); 
+			//float M = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]); // Line detector
+			//float S = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]) + (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + cnv[8]; 
+
+			return sqrt(M/S);
+		}
+		 
+		void main()
+		{
+			HueLevels[0] = 0.0;
+			HueLevels[1] = 140.0/360.;
+			HueLevels[2] = 160.0/360.;
+			HueLevels[3] = 240.0/360.;
+			HueLevels[4] = 240.0/360.;
+			HueLevels[5] = 360.0/360.;
+
+		
+			vec2 uv = vTexcoordPosition.xy;
+			vec4 tc = vec4(1.0, 0.0, 0.0, 1.0);
+
+			vec3 colorOrg = texture2D(uSampler0, uv).rgb;
+			vec3 vHSV =  rgb2hsv(vec3(colorOrg.r,colorOrg.g,colorOrg.b));
+			vHSV.x = nearestHue(vHSV.x);
+			vHSV.y = nearestSaturation(vHSV.y);
+			vHSV.z = nearestValue(vHSV.z);
+			float edg = IsEdge3(uv);
+			vec3 vRGB = (edg >= uEdgeThreshold)? vec3(0.0,0.0,0.0):hsv2rgb(vec3(vHSV.x,vHSV.y,vHSV.z));
+			tc = vec4(vRGB.x,vRGB.y,vRGB.z, 1);  
+
+			gl_FragColor = tc;
+		}
+	</script>
+	
+	<script id="toon-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+
+		uniform sampler2D uSampler0; 
+		uniform float uSamplerWidth;
+		uniform float uSamplerHeight;
+		uniform float uEdgeThreshold;
+		varying vec2 vTexcoordPosition; 
+		
+
+
+		const int HueLevelCount = 12;
+		const int SatLevelCount = 7;
+		const int ValLevelCount = 4;
+		vec4 err_color;
+		bool limited = false;
+
+		vec3 rgb2hsv(vec3 c)
+		{
+			vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+			vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+			vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+			float d = q.x - min(q.w, q.y);
+			float e = 1.0e-10;
+			return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+		}
+		
+		vec3 hsv2rgb(vec3 c)
+		{
+			vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+			vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+			return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+		}
+
+		float when_eq(float x, float y) {
+		  return 1.0 - abs(sign(x - y));
+		}
+
+		float when_neq(float x, float y) {
+		  return abs(sign(x - y));
+		}
+
+		float when_gt(float x, float y) {
+		  return max(sign(x - y), 0.0);
+		}
+
+		float when_lt(float x, float y) {
+		  return max(sign(y - x), 0.0);
+		}
+
+		float when_ge(float x, float y) {
+		  return 1.0 - when_lt(x, y);
+		}
+
+		float when_le(float x, float y) {
+		  return 1.0 - when_gt(x, y);
+		}
+		
+		float and(float a, float b) {
+		  return a * b;
+		}
+
+		float or(float a, float b) {
+		  return min(a + b, 1.0);
+		}
+
+		float xor(float a, float b) {
+		  return mod((a + b), 2.0);
+		}
+
+		float not(float a) {
+		  return 1.0 - a;
+		}
+		
+		float nearestHue(float col)
+		{
+			float col1 = 0.0, col2 = 0.0, ret = -1.0, i = 0.0;
+			
+			col1 = 0.0*0.083;
+			col2 = (0.0+1.0)*0.083;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.03)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.03*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 1.0*0.083;
+			col2 = (1.0+1.0)*0.083;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.03)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.03*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 2.0*0.083;
+			col2 = (2.0+1.0)*0.083;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.03)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.03*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 3.0*0.083;
+			col2 = (3.0+1.0)*0.083;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.03)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.03*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 4.0*0.083;
+			col2 = (4.0+1.0)*0.083;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.03)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.03*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 5.0*0.083;
+			col2 = (5.0+1.0)*0.083;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.03)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.03*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 6.0*0.083;
+			col2 = (6.0+1.0)*0.083;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.03)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.03*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 7.0*0.083;
+			col2 = (7.0+1.0)*0.083;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.03)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.03*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 8.0*0.083;
+			col2 = (8.0+1.0)*0.083;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.03)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.03*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 9.0*0.083;
+			col2 = (9.0+1.0)*0.083;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.03)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.03*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 10.0*0.083;
+			col2 = (10.0+1.0)*0.083;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.03)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.03*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 11.0*0.083;
+			col2 = (11.0+1.0)*0.083;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.03)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.03*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			ret += when_eq(ret, -1.0) * (1.0 + col);
+			
+			return clamp(ret, 0.0, 1.0);
+		}
+		
+		float nearestSaturation(float col)
+		{
+			float col1 = 0.0, col2 = 0.0, ret = -1.0, i = 0.0;
+			
+			col1 = 0.0*0.143;
+			col2 = (0.0+1.0)*0.143;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.06)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.06*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 1.0*0.143;
+			col2 = (1.0+1.0)*0.143;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.06)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.06*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 2.0*0.143;
+			col2 = (2.0+1.0)*0.143;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.06)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.06*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 3.0*0.143;
+			col2 = (3.0+1.0)*0.143;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.06)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.06*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 4.0*0.143;
+			col2 = (4.0+1.0)*0.143;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.06)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.06*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 5.0*0.143;
+			col2 = (5.0+1.0)*0.143;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.06)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.06*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 6.0*0.143;
+			col2 = (6.0+1.0)*0.143;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.06)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.06*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			col1 = 7.0*0.143;
+			col2 = (7.0+1.0)*0.143;
+			ret += and(and(and(when_eq(ret, -1.0), when_lt(col, col1 + 0.06)), when_ge(col, col1)), when_le(col, col2)) * (1.0+(col+(col-col1)/0.06*(col2-col)));
+			ret += and(and(when_eq(ret, -1.0), when_ge(col, col1)), when_le(col, col2)) * (1.0 + col2);
+			
+			ret += when_eq(ret, -1.0) * (1.0 + col);
+			
+			return clamp(ret, 0.0, 1.0);
+		}
+		
+		float nearestValue(float col)
+		{
+			if (col <= 0.1)
+				return 0.05;
+			for (int i =0; i < ValLevelCount-1; i++ ) {
+				if (col >= 0.3* float(i)+0.1 && col <= 0.3*float(i+1)+0.1) {
+					return 0.3*float(i+1);
+				}
+			}
+			return col;
+		}
+		
+		/* averaged pixel intensity from 3 color channels*/
+		float avg_intensity(vec4 pix) {
+		 return (pix.r + pix.g + pix.b)/3.;
+		}
+
+		vec4 get_pixel(vec2 coords, float dx, float dy) {
+		 return texture2D(uSampler0,coords + vec2(dx, dy));
+		}
+
+		/*returns pixel color*/
+		float IsEdge(in vec2 coords){
+		  float dxtex = 1.0 /float(uSamplerWidth);/*float(textureSize(uSampler0,0)*/
+		  float dytex = 1.0 /float(uSamplerHeight);
+		  float pix[9];
+		  float delta;
+
+		  /* read neighboring pixel intensities*/
+		  pix[0] = avg_intensity(get_pixel(coords,-1.0*dxtex,-1.0*dytex));
+		  pix[1] = avg_intensity(get_pixel(coords,-1.0*dxtex,0.0));
+		  pix[2] = avg_intensity(get_pixel(coords,-1.0*dxtex,1.0*dytex));
+		  pix[3] = avg_intensity(get_pixel(coords,0.0*dxtex,-1.0*dytex));
+		  pix[4] = avg_intensity(get_pixel(coords,0.0,0.0*dytex));
+		  pix[5] = avg_intensity(get_pixel(coords,0.0,1.0*dytex));
+		  pix[6] = avg_intensity(get_pixel(coords,1.0*dxtex,-1.0*dytex));
+		  pix[7] = avg_intensity(get_pixel(coords,1.0*dxtex,0.0));
+		  pix[8] = avg_intensity(get_pixel(coords,1.0*dxtex,1.0*dytex));
+		  
+
+		  /* average color differences around neighboring pixels*/
+		  delta = (abs(pix[1]-pix[7])+
+				  abs(pix[5]-pix[3]) +
+				  abs(pix[0]-pix[8])+
+				  abs(pix[2]-pix[6])
+				   )/4.;
+
+		  return clamp(5.5*delta,0.0,1.0);
+		}
+		
+		float IsEdge2(in vec2 coords)
+		{
+			mat3 G[2];
+			mat3 G2[9];
+
+			G[0] = mat3( 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 );
+			G[1] = mat3( 1.0, 0.0, -1.0, 2.0, 0.0, -2.0, 1.0, 0.0, -1.0 );
+			
+			G2[0] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0 );
+			G2[1] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, 0.0, -1.0, sqrt(2.0), 0.0, -sqrt(2.0), 1.0, 0.0, -1.0 );
+			G2[2] = 1.0/(2.0*sqrt(2.0)) * mat3( 0.0, -1.0, sqrt(2.0), 1.0, 0.0, -1.0, -sqrt(2.0), 1.0, 0.0 );
+			G2[3] = 1.0/(2.0*sqrt(2.0)) * mat3( sqrt(2.0), -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, -sqrt(2.0) );
+			G2[4] = 1.0/2.0 * mat3( 0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0 );
+			G2[5] = 1.0/2.0 * mat3( -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0 );
+			G2[6] = 1.0/6.0 * mat3( 1.0, -2.0, 1.0, -2.0, 4.0, -2.0, 1.0, -2.0, 1.0 );
+			G2[7] = 1.0/6.0 * mat3( -2.0, 1.0, -2.0, 1.0, 4.0, 1.0, -2.0, 1.0, -2.0 );
+			G2[8] = 1.0/3.0 * mat3( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 );
+			
+			float texelWidth = 1.0/uSamplerWidth;
+			float texelHeight = 1.0/uSamplerHeight;
+
+			mat3 I;
+			float cnv[2];
+			vec3 sample;
+			// fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value
+
+			sample = texture2D(uSampler0, coords + vec2(-texelWidth,-texelHeight)).rgb;
+			I[0][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(-texelWidth,0)).rgb;
+			I[0][1] = length(sample);
+			
+			sample = texture2D(uSampler0, coords + vec2(-texelWidth,texelHeight)).rgb;
+			I[0][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(0,-texelHeight)).rgb;
+			I[1][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords).rgb;
+			I[1][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(0,texelHeight)).rgb;
+			I[1][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(texelWidth,-texelHeight)).rgb;
+			I[2][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(texelWidth,0)).rgb;
+			I[2][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(texelWidth,texelHeight)).rgb;
+			I[2][2] = length(sample); 
+
+
+			// calculate the convolution values for all the masks
+			float dp3 = dot(G[0][0], I[0]) + dot(G[0][1], I[1]) + dot(G[0][2], I[2]);
+			cnv[0] = dp3 * dp3; 
+			dp3 = dot(G[1][0], I[0]) + dot(G[1][1], I[1]) + dot(G[1][2], I[2]);
+			cnv[1] = dp3 * dp3; 
+
+			return 0.5 * sqrt(cnv[0]*cnv[0]+cnv[1]*cnv[1]);
+		}
+			
+		float IsEdge3(in vec2 coords)
+		{
+			mat3 G[2];
+			mat3 G2[9];
+
+			G[0] = mat3( 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 );
+			G[1] = mat3( 1.0, 0.0, -1.0, 2.0, 0.0, -2.0, 1.0, 0.0, -1.0 );
+			
+			G2[0] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0 );
+			G2[1] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, 0.0, -1.0, sqrt(2.0), 0.0, -sqrt(2.0), 1.0, 0.0, -1.0 );
+			G2[2] = 1.0/(2.0*sqrt(2.0)) * mat3( 0.0, -1.0, sqrt(2.0), 1.0, 0.0, -1.0, -sqrt(2.0), 1.0, 0.0 );
+			G2[3] = 1.0/(2.0*sqrt(2.0)) * mat3( sqrt(2.0), -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, -sqrt(2.0) );
+			G2[4] = 1.0/2.0 * mat3( 0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0 );
+			G2[5] = 1.0/2.0 * mat3( -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0 );
+			G2[6] = 1.0/6.0 * mat3( 1.0, -2.0, 1.0, -2.0, 4.0, -2.0, 1.0, -2.0, 1.0 );
+			G2[7] = 1.0/6.0 * mat3( -2.0, 1.0, -2.0, 1.0, 4.0, 1.0, -2.0, 1.0, -2.0 );
+			G2[8] = 1.0/3.0 * mat3( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 );
+			
+			float texelWidth = 1.0/uSamplerWidth;
+			float texelHeight = 1.0/uSamplerHeight;
+
+			mat3 I;
+			float cnv[9];
+			vec3 sample;
+
+			// fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,-texelHeight)).rgb;
+			I[0][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,0)).rgb;
+			I[0][1] = length(sample);
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,texelHeight)).rgb;
+			I[0][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0,-texelHeight)).rgb;
+			I[1][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition).rgb;
+			I[1][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0,texelHeight)).rgb;
+			I[1][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,-texelHeight)).rgb;
+			I[2][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,0)).rgb;
+			I[2][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,texelHeight)).rgb;
+			I[2][2] = length(sample); 
+
+			// calculate the convolution values for all the masks 
+
+			float dp3 = dot(G2[0][0], I[0]) + dot(G2[0][1], I[1]) + dot(G2[0][2], I[2]);
+			cnv[0] = dp3 * dp3; 
+			
+			dp3 = dot(G2[1][0], I[0]) + dot(G2[1][1], I[1]) + dot(G2[1][2], I[2]);
+			cnv[1] = dp3 * dp3; 
+			
+			dp3 = dot(G2[2][0], I[0]) + dot(G2[2][1], I[1]) + dot(G2[2][2], I[2]);
+			cnv[2] = dp3 * dp3; 
+			
+			dp3 = dot(G2[3][0], I[0]) + dot(G2[3][1], I[1]) + dot(G2[3][2], I[2]);
+			cnv[3] = dp3 * dp3; 
+			
+			dp3 = dot(G2[4][0], I[0]) + dot(G2[4][1], I[1]) + dot(G2[4][2], I[2]);
+			cnv[4] = dp3 * dp3; 
+			
+			dp3 = dot(G2[5][0], I[0]) + dot(G2[5][1], I[1]) + dot(G2[5][2], I[2]);
+			cnv[5] = dp3 * dp3; 
+			
+			dp3 = dot(G2[6][0], I[0]) + dot(G2[6][1], I[1]) + dot(G2[6][2], I[2]);
+			cnv[6] = dp3 * dp3; 
+			
+			dp3 = dot(G2[7][0], I[0]) + dot(G2[7][1], I[1]) + dot(G2[7][2], I[2]);
+			cnv[7] = dp3 * dp3; 
+			
+			dp3 = dot(G2[8][0], I[0]) + dot(G2[8][1], I[1]) + dot(G2[8][2], I[2]);
+			cnv[8] = dp3 * dp3; 
+
+			float M = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]); // Edge detector
+			float S = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + (cnv[8] + M); 
+			//float M = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]); // Line detector
+			//float S = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]) + (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + cnv[8]; 
+
+			return sqrt(M/S);
+		}
+
+		void main()
+		{
+			limited = false;
+
+			vec4 colorOrg = texture2D( uSampler0, vTexcoordPosition );
+			vec3 vHSV =  rgb2hsv(vec3(colorOrg.r,colorOrg.g,colorOrg.b));
+			vHSV.x = nearestHue(vHSV.x);
+			vHSV.y = nearestSaturation(vHSV.y);
+			vHSV.z = nearestValue(vHSV.z);
+			float edg = IsEdge3(vTexcoordPosition);
+			
+			vec3 vRGB = (edg >= uEdgeThreshold)? vec3(0.0,0.0,0.0):hsv2rgb(vec3(vHSV.x,vHSV.y,vHSV.z));
+			
+			gl_FragColor = vec4(vRGB.x,vRGB.y,vRGB.z,1.0);
+		}
+	</script>	
+	
+	<script id="a-sketch-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+
+		uniform sampler2D uSampler0; 
+		uniform sampler2D uSampler1; 
+		uniform float uSamplerWidth;
+		uniform float uSamplerHeight;
+		uniform float uSharpnessVal;
+		varying vec2 vTexcoordPosition; 
+	
+		vec3 rgb2hsv(vec3 c)
+		{
+			vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+			vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+			vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+			float d = q.x - min(q.w, q.y);
+			float e = 1.0e-10;
+			return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+		}
+		
+		vec3 hsv2rgb(vec3 c)
+		{
+			vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+			vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+			return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+		}
+
+		/* averaged pixel intensity from 3 color channels*/
+		float avg_intensity(vec4 pix) {
+		 return (pix.r + pix.g + pix.b)/3.;
+		}
+
+		vec4 get_pixel(vec2 coords, float dx, float dy) {
+		 return texture2D(uSampler0,coords + vec2(dx, dy));
+		}
+
+		/*returns pixel color*/
+		float IsEdge(in vec2 coords){
+		  float dxtex = 1.0 /float(uSamplerWidth);/*float(textureSize(uSampler0,0)*/
+		  float dytex = 1.0 /float(uSamplerHeight);
+		  float pix[9];
+		  float delta;
+
+		  /* read neighboring pixel intensities*/
+		  pix[0] = avg_intensity(get_pixel(coords,-1.0*dxtex,-1.0*dytex));
+		  pix[1] = avg_intensity(get_pixel(coords,-1.0*dxtex,0.0));
+		  pix[2] = avg_intensity(get_pixel(coords,-1.0*dxtex,1.0*dytex));
+		  pix[3] = avg_intensity(get_pixel(coords,0.0*dxtex,-1.0*dytex));
+		  pix[4] = avg_intensity(get_pixel(coords,0.0,0.0*dytex));
+		  pix[5] = avg_intensity(get_pixel(coords,0.0,1.0*dytex));
+		  pix[6] = avg_intensity(get_pixel(coords,1.0*dxtex,-1.0*dytex));
+		  pix[7] = avg_intensity(get_pixel(coords,1.0*dxtex,0.0));
+		  pix[8] = avg_intensity(get_pixel(coords,1.0*dxtex,1.0*dytex));
+		  
+
+		  /* average color differences around neighboring pixels*/
+		  delta = (abs(pix[1]-pix[7])+
+				  abs(pix[5]-pix[3]) +
+				  abs(pix[0]-pix[8])+
+				  abs(pix[2]-pix[6])
+				   )/4.;
+
+		  return clamp(5.5*delta,0.0,1.0);
+		}
+
+		float IsEdge2(in vec2 coords)
+		{
+			mat3 G[2];
+			mat3 G2[9];
+
+			G[0] = mat3( 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 );
+			G[1] = mat3( 1.0, 0.0, -1.0, 2.0, 0.0, -2.0, 1.0, 0.0, -1.0 );
+			
+			G2[0] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0 );
+			G2[1] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, 0.0, -1.0, sqrt(2.0), 0.0, -sqrt(2.0), 1.0, 0.0, -1.0 );
+			G2[2] = 1.0/(2.0*sqrt(2.0)) * mat3( 0.0, -1.0, sqrt(2.0), 1.0, 0.0, -1.0, -sqrt(2.0), 1.0, 0.0 );
+			G2[3] = 1.0/(2.0*sqrt(2.0)) * mat3( sqrt(2.0), -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, -sqrt(2.0) );
+			G2[4] = 1.0/2.0 * mat3( 0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0 );
+			G2[5] = 1.0/2.0 * mat3( -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0 );
+			G2[6] = 1.0/6.0 * mat3( 1.0, -2.0, 1.0, -2.0, 4.0, -2.0, 1.0, -2.0, 1.0 );
+			G2[7] = 1.0/6.0 * mat3( -2.0, 1.0, -2.0, 1.0, 4.0, 1.0, -2.0, 1.0, -2.0 );
+			G2[8] = 1.0/3.0 * mat3( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 );
+			
+			float texelWidth = 1.0/uSamplerWidth;
+			float texelHeight = 1.0/uSamplerHeight;
+
+			mat3 I;
+			float cnv[2];
+			vec3 sample;
+			// fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value
+
+			sample = texture2D(uSampler0, coords + vec2(-texelWidth,-texelHeight)).rgb;
+			I[0][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(-texelWidth,0)).rgb;
+			I[0][1] = length(sample);
+			
+			sample = texture2D(uSampler0, coords + vec2(-texelWidth,texelHeight)).rgb;
+			I[0][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(0,-texelHeight)).rgb;
+			I[1][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords).rgb;
+			I[1][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(0,texelHeight)).rgb;
+			I[1][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(texelWidth,-texelHeight)).rgb;
+			I[2][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(texelWidth,0)).rgb;
+			I[2][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(texelWidth,texelHeight)).rgb;
+			I[2][2] = length(sample); 
+
+
+			// calculate the convolution values for all the masks
+			float dp3 = dot(G[0][0], I[0]) + dot(G[0][1], I[1]) + dot(G[0][2], I[2]);
+			cnv[0] = dp3 * dp3; 
+			dp3 = dot(G[1][0], I[0]) + dot(G[1][1], I[1]) + dot(G[1][2], I[2]);
+			cnv[1] = dp3 * dp3; 
+
+			return 0.5 * sqrt(cnv[0]*cnv[0]+cnv[1]*cnv[1]);
+		}
+		
+		float IsEdge3(in vec2 coords)
+		{
+			mat3 G[2];
+			mat3 G2[9];
+
+			G[0] = mat3( 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 );
+			G[1] = mat3( 1.0, 0.0, -1.0, 2.0, 0.0, -2.0, 1.0, 0.0, -1.0 );
+			
+			G2[0] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0 );
+			G2[1] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, 0.0, -1.0, sqrt(2.0), 0.0, -sqrt(2.0), 1.0, 0.0, -1.0 );
+			G2[2] = 1.0/(2.0*sqrt(2.0)) * mat3( 0.0, -1.0, sqrt(2.0), 1.0, 0.0, -1.0, -sqrt(2.0), 1.0, 0.0 );
+			G2[3] = 1.0/(2.0*sqrt(2.0)) * mat3( sqrt(2.0), -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, -sqrt(2.0) );
+			G2[4] = 1.0/2.0 * mat3( 0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0 );
+			G2[5] = 1.0/2.0 * mat3( -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0 );
+			G2[6] = 1.0/6.0 * mat3( 1.0, -2.0, 1.0, -2.0, 4.0, -2.0, 1.0, -2.0, 1.0 );
+			G2[7] = 1.0/6.0 * mat3( -2.0, 1.0, -2.0, 1.0, 4.0, 1.0, -2.0, 1.0, -2.0 );
+			G2[8] = 1.0/3.0 * mat3( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 );
+			
+			float texelWidth = 1.0/uSamplerWidth;
+			float texelHeight = 1.0/uSamplerHeight;
+
+			mat3 I;
+			float cnv[9];
+			vec3 sample;
+
+			// fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,-texelHeight)).rgb;
+			I[0][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,0)).rgb;
+			I[0][1] = length(sample);
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,texelHeight)).rgb;
+			I[0][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0,-texelHeight)).rgb;
+			I[1][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition).rgb;
+			I[1][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0,texelHeight)).rgb;
+			I[1][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,-texelHeight)).rgb;
+			I[2][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,0)).rgb;
+			I[2][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,texelHeight)).rgb;
+			I[2][2] = length(sample); 
+
+			// calculate the convolution values for all the masks 
+
+			float dp3 = dot(G2[0][0], I[0]) + dot(G2[0][1], I[1]) + dot(G2[0][2], I[2]);
+			cnv[0] = dp3 * dp3; 
+			
+			dp3 = dot(G2[1][0], I[0]) + dot(G2[1][1], I[1]) + dot(G2[1][2], I[2]);
+			cnv[1] = dp3 * dp3; 
+			
+			dp3 = dot(G2[2][0], I[0]) + dot(G2[2][1], I[1]) + dot(G2[2][2], I[2]);
+			cnv[2] = dp3 * dp3; 
+			
+			dp3 = dot(G2[3][0], I[0]) + dot(G2[3][1], I[1]) + dot(G2[3][2], I[2]);
+			cnv[3] = dp3 * dp3; 
+			
+			dp3 = dot(G2[4][0], I[0]) + dot(G2[4][1], I[1]) + dot(G2[4][2], I[2]);
+			cnv[4] = dp3 * dp3; 
+			
+			dp3 = dot(G2[5][0], I[0]) + dot(G2[5][1], I[1]) + dot(G2[5][2], I[2]);
+			cnv[5] = dp3 * dp3; 
+			
+			dp3 = dot(G2[6][0], I[0]) + dot(G2[6][1], I[1]) + dot(G2[6][2], I[2]);
+			cnv[6] = dp3 * dp3; 
+			
+			dp3 = dot(G2[7][0], I[0]) + dot(G2[7][1], I[1]) + dot(G2[7][2], I[2]);
+			cnv[7] = dp3 * dp3; 
+			
+			dp3 = dot(G2[8][0], I[0]) + dot(G2[8][1], I[1]) + dot(G2[8][2], I[2]);
+			cnv[8] = dp3 * dp3; 
+
+			float M = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]); // Edge detector
+			float S = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + (cnv[8] + M); 
+			//float M = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]); // Line detector
+			//float S = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]) + (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + cnv[8]; 
+
+			return sqrt(M/S);
+		}
+		
+		vec3 clamp_grey_scale_color(vec3 col)
+		{
+			float grey = (col.r + col.g + col.b) / 3.0;
+			float finalGrey = -1.0;
+			finalGrey += float(finalGrey == -1.0 && grey > 0.95) * 2.0;
+			finalGrey += float(finalGrey == -1.0 && grey < 0.1) * 1.1;
+			finalGrey += float(finalGrey == -1.0 && grey >= 0.1 && grey <= 0.23) * 1.23;
+			finalGrey += float(finalGrey == -1.0 && grey >= 0.23 && grey <= 0.4) * 1.4;
+			finalGrey += float(finalGrey == -1.0 && grey >= 0.4 && grey <= 0.5) * 1.5;
+			finalGrey += float(finalGrey == -1.0 && grey >= 0.5 && grey <= 0.95) * 1.95;
+			return vec3(finalGrey, finalGrey, finalGrey);
+		}
+		
+		void main()
+		{
+			vec4 colorOrg = texture2D( uSampler0, vTexcoordPosition );
+			const float contrast = 1.1;
+			const float saturation = 1.1;
+			const float brightness = 0.1;
+			//colorOrg.rgb = (colorOrg.rgb-vec3(0.5))*contrast + vec3(0.5);
+			//colorOrg.rgb*=saturation;
+			//colorOrg.rgb+=brightness;
+			
+			float edg = IsEdge2(vTexcoordPosition);
+			if (edg >= uSharpnessVal)
+				gl_FragColor = vec4(0.3, 0.3, 0.3, 1.0);
+			else{
+				vec3 col = clamp_grey_scale_color(colorOrg.rgb);
+				
+					col = vec3(1.0) - ((vec3(1.0) - col)*texture2D(uSampler1, vTexcoordPosition).rgb);
+				 
+				gl_FragColor = vec4(col, 1.0);
+			}
+		}
+	</script>	
+	
+	<script id="a-sketch2-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+
+		uniform sampler2D uSampler0; 
+		uniform sampler2D uSampler1; 
+		uniform float uSamplerWidth;
+		uniform float uSamplerHeight;
+		uniform float uSharpnessVal;
+		uniform float uVal1;
+		uniform float uVal2;
+		uniform float uVal3;
+		varying vec2 vTexcoordPosition; 
+	
+		vec3 rgb2hsv(vec3 c)
+		{
+			vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+			vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+			vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+			float d = q.x - min(q.w, q.y);
+			float e = 1.0e-10;
+			return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+		}
+		
+		vec3 hsv2rgb(vec3 c)
+		{
+			vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+			vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+			return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+		}
+
+		/* averaged pixel intensity from 3 color channels*/
+		float avg_intensity(vec4 pix) {
+		 return (pix.r + pix.g + pix.b)/3.;
+		}
+
+		vec4 get_pixel(vec2 coords, float dx, float dy) {
+		 return texture2D(uSampler0,coords + vec2(dx, dy));
+		}
+
+		/*returns pixel color*/
+		float IsEdge(in vec2 coords){
+		  float dxtex = 1.0 /float(uSamplerWidth);/*float(textureSize(uSampler0,0)*/
+		  float dytex = 1.0 /float(uSamplerHeight);
+		  float pix[9];
+		  float delta;
+
+		  /* read neighboring pixel intensities*/
+		  pix[0] = avg_intensity(get_pixel(coords,-1.0*dxtex,-1.0*dytex));
+		  pix[1] = avg_intensity(get_pixel(coords,-1.0*dxtex,0.0));
+		  pix[2] = avg_intensity(get_pixel(coords,-1.0*dxtex,1.0*dytex));
+		  pix[3] = avg_intensity(get_pixel(coords,0.0*dxtex,-1.0*dytex));
+		  pix[4] = avg_intensity(get_pixel(coords,0.0,0.0*dytex));
+		  pix[5] = avg_intensity(get_pixel(coords,0.0,1.0*dytex));
+		  pix[6] = avg_intensity(get_pixel(coords,1.0*dxtex,-1.0*dytex));
+		  pix[7] = avg_intensity(get_pixel(coords,1.0*dxtex,0.0));
+		  pix[8] = avg_intensity(get_pixel(coords,1.0*dxtex,1.0*dytex));
+		  
+
+		  /* average color differences around neighboring pixels*/
+		  delta = (abs(pix[1]-pix[7])+
+				  abs(pix[5]-pix[3]) +
+				  abs(pix[0]-pix[8])+
+				  abs(pix[2]-pix[6])
+				   )/4.;
+
+		  return clamp(5.5*delta,0.0,1.0);
+		}
+
+		float IsEdge2(in vec2 coords)
+		{
+			mat3 G[2];
+			mat3 G2[9];
+
+			G[0] = mat3( 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 );
+			G[1] = mat3( 1.0, 0.0, -1.0, 2.0, 0.0, -2.0, 1.0, 0.0, -1.0 );
+			
+			G2[0] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0 );
+			G2[1] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, 0.0, -1.0, sqrt(2.0), 0.0, -sqrt(2.0), 1.0, 0.0, -1.0 );
+			G2[2] = 1.0/(2.0*sqrt(2.0)) * mat3( 0.0, -1.0, sqrt(2.0), 1.0, 0.0, -1.0, -sqrt(2.0), 1.0, 0.0 );
+			G2[3] = 1.0/(2.0*sqrt(2.0)) * mat3( sqrt(2.0), -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, -sqrt(2.0) );
+			G2[4] = 1.0/2.0 * mat3( 0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0 );
+			G2[5] = 1.0/2.0 * mat3( -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0 );
+			G2[6] = 1.0/6.0 * mat3( 1.0, -2.0, 1.0, -2.0, 4.0, -2.0, 1.0, -2.0, 1.0 );
+			G2[7] = 1.0/6.0 * mat3( -2.0, 1.0, -2.0, 1.0, 4.0, 1.0, -2.0, 1.0, -2.0 );
+			G2[8] = 1.0/3.0 * mat3( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 );
+			
+			float texelWidth = 1.0/uSamplerWidth;
+			float texelHeight = 1.0/uSamplerHeight;
+
+			mat3 I;
+			float cnv[2];
+			vec3 sample;
+			// fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value
+
+			sample = texture2D(uSampler0, coords + vec2(-texelWidth,-texelHeight)).rgb;
+			I[0][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(-texelWidth,0)).rgb;
+			I[0][1] = length(sample);
+			
+			sample = texture2D(uSampler0, coords + vec2(-texelWidth,texelHeight)).rgb;
+			I[0][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(0,-texelHeight)).rgb;
+			I[1][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords).rgb;
+			I[1][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(0,texelHeight)).rgb;
+			I[1][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(texelWidth,-texelHeight)).rgb;
+			I[2][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(texelWidth,0)).rgb;
+			I[2][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, coords + vec2(texelWidth,texelHeight)).rgb;
+			I[2][2] = length(sample); 
+
+
+			// calculate the convolution values for all the masks
+			float dp3 = dot(G[0][0], I[0]) + dot(G[0][1], I[1]) + dot(G[0][2], I[2]);
+			cnv[0] = dp3 * dp3; 
+			dp3 = dot(G[1][0], I[0]) + dot(G[1][1], I[1]) + dot(G[1][2], I[2]);
+			cnv[1] = dp3 * dp3; 
+
+			return 0.5 * sqrt(cnv[0]*cnv[0]+cnv[1]*cnv[1]);
+		}
+		
+		float IsEdge3(in vec2 coords)
+		{
+			mat3 G[2];
+			mat3 G2[9];
+
+			G[0] = mat3( 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0 );
+			G[1] = mat3( 1.0, 0.0, -1.0, 2.0, 0.0, -2.0, 1.0, 0.0, -1.0 );
+			
+			G2[0] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0 );
+			G2[1] = 1.0/(2.0*sqrt(2.0)) * mat3( 1.0, 0.0, -1.0, sqrt(2.0), 0.0, -sqrt(2.0), 1.0, 0.0, -1.0 );
+			G2[2] = 1.0/(2.0*sqrt(2.0)) * mat3( 0.0, -1.0, sqrt(2.0), 1.0, 0.0, -1.0, -sqrt(2.0), 1.0, 0.0 );
+			G2[3] = 1.0/(2.0*sqrt(2.0)) * mat3( sqrt(2.0), -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, -sqrt(2.0) );
+			G2[4] = 1.0/2.0 * mat3( 0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0 );
+			G2[5] = 1.0/2.0 * mat3( -1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0 );
+			G2[6] = 1.0/6.0 * mat3( 1.0, -2.0, 1.0, -2.0, 4.0, -2.0, 1.0, -2.0, 1.0 );
+			G2[7] = 1.0/6.0 * mat3( -2.0, 1.0, -2.0, 1.0, 4.0, 1.0, -2.0, 1.0, -2.0 );
+			G2[8] = 1.0/3.0 * mat3( 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 );
+			
+			float texelWidth = 1.0/uSamplerWidth;
+			float texelHeight = 1.0/uSamplerHeight;
+
+			mat3 I;
+			float cnv[9];
+			vec3 sample;
+
+			// fetch the 3x3 neighbourhood and use the RGB vector's length as intensity value
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,-texelHeight)).rgb;
+			I[0][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,0)).rgb;
+			I[0][1] = length(sample);
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-texelWidth,texelHeight)).rgb;
+			I[0][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0,-texelHeight)).rgb;
+			I[1][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition).rgb;
+			I[1][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0,texelHeight)).rgb;
+			I[1][2] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,-texelHeight)).rgb;
+			I[2][0] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,0)).rgb;
+			I[2][1] = length(sample); 
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(texelWidth,texelHeight)).rgb;
+			I[2][2] = length(sample); 
+
+			// calculate the convolution values for all the masks 
+
+			float dp3 = dot(G2[0][0], I[0]) + dot(G2[0][1], I[1]) + dot(G2[0][2], I[2]);
+			cnv[0] = dp3 * dp3; 
+			
+			dp3 = dot(G2[1][0], I[0]) + dot(G2[1][1], I[1]) + dot(G2[1][2], I[2]);
+			cnv[1] = dp3 * dp3; 
+			
+			dp3 = dot(G2[2][0], I[0]) + dot(G2[2][1], I[1]) + dot(G2[2][2], I[2]);
+			cnv[2] = dp3 * dp3; 
+			
+			dp3 = dot(G2[3][0], I[0]) + dot(G2[3][1], I[1]) + dot(G2[3][2], I[2]);
+			cnv[3] = dp3 * dp3; 
+			
+			dp3 = dot(G2[4][0], I[0]) + dot(G2[4][1], I[1]) + dot(G2[4][2], I[2]);
+			cnv[4] = dp3 * dp3; 
+			
+			dp3 = dot(G2[5][0], I[0]) + dot(G2[5][1], I[1]) + dot(G2[5][2], I[2]);
+			cnv[5] = dp3 * dp3; 
+			
+			dp3 = dot(G2[6][0], I[0]) + dot(G2[6][1], I[1]) + dot(G2[6][2], I[2]);
+			cnv[6] = dp3 * dp3; 
+			
+			dp3 = dot(G2[7][0], I[0]) + dot(G2[7][1], I[1]) + dot(G2[7][2], I[2]);
+			cnv[7] = dp3 * dp3; 
+			
+			dp3 = dot(G2[8][0], I[0]) + dot(G2[8][1], I[1]) + dot(G2[8][2], I[2]);
+			cnv[8] = dp3 * dp3; 
+
+			float M = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]); // Edge detector
+			float S = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + (cnv[8] + M); 
+			//float M = (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]); // Line detector
+			//float S = (cnv[0] + cnv[1]) + (cnv[2] + cnv[3]) + (cnv[4] + cnv[5]) + (cnv[6] + cnv[7]) + cnv[8]; 
+
+			return sqrt(M/S);
+		}
+		
+		vec3 clamp_grey_scale_color(vec3 col)
+		{
+			float grey = (col.r + col.g + col.b) / 3.0;
+			float finalGrey = -1.0;
+			finalGrey += float(finalGrey == -1.0 && grey > 0.95) * 2.0;
+			finalGrey += float(finalGrey == -1.0 && grey < 0.1) * 1.1;
+			finalGrey += float(finalGrey == -1.0 && grey >= 0.1 && grey <= 0.23) * 1.23;
+			finalGrey += float(finalGrey == -1.0 && grey >= 0.23 && grey <= 0.4) * 1.4;
+			finalGrey += float(finalGrey == -1.0 && grey >= 0.4 && grey <= 0.5) * 1.5;
+			finalGrey += float(finalGrey == -1.0 && grey >= 0.5 && grey <= 0.95) * 1.95;
+			return vec3(finalGrey, finalGrey, finalGrey);
+		}
+		
+		vec3 get_sketch_color(vec2 uv,vec3 col)
+		{
+			//uv *= vec2(0.5, 0.5);
+			uv = mod(uv, vec2(0.5, 0.5));
+			float val = (col.r + col.g + col.b)/3.0;
+			
+			if (val >= uVal1) // 0,5
+				uv += vec2(0, 0);
+			else if (val >= uVal2) // 0.45
+				uv += vec2(0.5, 0);
+			else if (val >= uVal3) // 0.3
+				uv += vec2(0.0, 0.5);
+			else
+				uv += vec2(0.5, 0.5);/*
+			vec3 outa = texture2D(uSampler1, uv).rgb;
+			float outVal = (outa.x+outa.y+outa.z)/3.0;
+			return (uVal1 < outVal ? outa : col);*/
+			return texture2D(uSampler1, uv).rgb;
+		}
+		
+		void main()
+		{
+			vec4 colorOrg = texture2D( uSampler0, vTexcoordPosition );
+			
+			float edg = IsEdge2(vTexcoordPosition);
+			if (edg >= uSharpnessVal)
+				gl_FragColor = vec4(0.3, 0.3, 0.3, 1.0);
+			else{
+				//vec3 col = clamp_grey_scale_color(colorOrg.rgb);
+				
+				//	col = vec3(1.0) - ((vec3(1.0) - col)*texture2D(uSampler1, vTexcoordPosition).rgb);
+				 
+				gl_FragColor = vec4(get_sketch_color(vTexcoordPosition.xy, colorOrg.rgb), 1.0);
+			}
+		}
+	</script>	
+	
+	<script id="radial-wave-shader-fs" type="x-shader/x-fragment">
+
+		precision mediump float;
+		
+		uniform sampler2D uSampler0;
+		uniform float uAmplitude;
+		uniform float uWaveLength;
+		uniform vec2 uWaveCenter;
+		
+		const float PI = 3.1415926535;
+		
+		varying vec2 vTexcoordPosition;
+				 
+		void main()
+		{
+			float d = (length(vTexcoordPosition - uWaveCenter)/uWaveLength)*2.0*PI;
+			vec4 col = texture2D(uSampler0, vTexcoordPosition+vec2(sin(d),sin(d))*uAmplitude);
+			gl_FragColor = col;
+		}
+	</script>	
+	
+	<script id="vertical-denoise-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		uniform sampler2D uSampler0;
+        uniform float uExponent;
+		uniform float uSamplerWidth;
+		uniform float uSamplerHeight;
+        varying vec2 vTexcoordPosition;
+        void main() {
+            vec4 center = texture2D(uSampler0, vTexcoordPosition);
+            vec4 color = vec4(0.0);
+            float total = 0.0;
+			
+			vec4 sample = texture2D(uSampler0, vTexcoordPosition + vec2(0.0, -4.0/uSamplerHeight));
+			float weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0.0, -3.0/uSamplerHeight));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0.0, -2.0/uSamplerHeight));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0.0, -1.0/uSamplerHeight));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition);
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0.0, 1.0/uSamplerHeight));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0.0, 2.0/uSamplerHeight));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0.0, 3.0/uSamplerHeight));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(0.0, 4.0/uSamplerHeight));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+
+            gl_FragColor = color / total;
+        }
+	</script>
+	
+	<script id="horizontal-denoise-shader-fs" type="x-shader/x-fragment">
+		precision mediump float;
+		uniform sampler2D uSampler0;
+        uniform float uExponent;
+		uniform float uSamplerWidth;
+		uniform float uSamplerHeight;
+        varying vec2 vTexcoordPosition;
+        void main() {
+            vec4 center = texture2D(uSampler0, vTexcoordPosition);
+            vec4 color = vec4(0.0);
+            float total = 0.0;
+			
+			vec4 sample = texture2D(uSampler0, vTexcoordPosition + vec2(-4.0/uSamplerWidth, 0));
+			float weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-3.0/uSamplerWidth, 0));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-2.0/uSamplerWidth, 0));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(-1.0/uSamplerWidth, 0));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition);
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(1.0/uSamplerWidth, 0));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(2.0/uSamplerWidth, 0));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(3.0/uSamplerWidth, 0));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+			sample = texture2D(uSampler0, vTexcoordPosition + vec2(4.0/uSamplerWidth, 0));
+			weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+			weight = pow(weight, uExponent);
+			color += sample * weight;
+			total += weight;
+			
+            gl_FragColor = color / total;
+        }
+	</script>
+	
+	<script id="sketch-shader-fs0" type="x-shader/x-fragment">
+
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+uniform sampler2D uSampler2;
+varying vec2 vTexcoordPosition;
+const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+void main()
+{
+	vec3 color;
+	vec3 border;
+	float dx = 1./720.;
+	float dy = 1./720.;
+	vec4 texColour = texture2D(uSampler1,vTexcoordPosition);
+	vec3 sample0 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y + dy)).rgb;
+	vec3 sample1 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y)).rgb;
+	vec3 sample2 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y - dy)).rgb;
+	vec3 sample3 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y + dy)).rgb;
+	vec3 sample4 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y)).rgb;
+	vec3 sample5 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y - dy)).rgb;
+	vec3 sample6 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y + dy)).rgb;
+	vec3 sample7 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y)).rgb;
+	vec3 sample8 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y - dy)).rgb;
+	vec3 horizEdge = sample2 + sample5 + sample8 - (sample0 + sample3 + sample6);
+	vec3 vertEdge = sample0 + sample1 + sample2 - (sample6 + sample7 + sample8);
+	border = sqrt((horizEdge * horizEdge) + (vertEdge * vertEdge));
+	float gray = dot(sample4, W);
+	if (gray > 0.20)
+	color= vec3(1.0);
+	else if (gray > 0.05){
+	color = texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0 + 0.5, vTexcoordPosition.y/2.0  + 0.5)).rgb;
+	vec4 color2;
+	vec4 color1;
+	color2= vec4(color, 1.0);
+	color1 = vec4(1.0*gray, 1.0*gray, 1.0*gray, 0.8);
+	color = (color1 * (color2.a * (color1 / color1.a) + (2.0 * color2 * (1.0 - (color1 / color1.a)))) + color2 * (1.0 - color1.a) + color1 * (1.0 - color2.a)).rgb;
+	}
+	else
+	color = vec3(0.0);
+	gl_FragColor = vec4(color, 1.0);
+}
+	</script>
+	
+	<script id="sketch-shader-fs1" type="x-shader/x-fragment">
+
+
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+uniform sampler2D uSampler2;
+varying vec2 vTexcoordPosition;
+const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+void main()
+{
+vec3 color;
+vec3 border;
+float dx = 1./720.;
+float dy = 1./720.;
+vec4 texColour = texture2D(uSampler1,vTexcoordPosition);
+vec3 sample0 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample1 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y)).rgb;
+vec3 sample2 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y - dy)).rgb;
+vec3 sample3 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y + dy)).rgb;
+vec3 sample4 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y)).rgb;
+vec3 sample5 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y - dy)).rgb;
+vec3 sample6 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample7 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y)).rgb;
+vec3 sample8 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y - dy)).rgb;
+vec3 horizEdge = sample2 + sample5 + sample8 - (sample0 + sample3 + sample6);
+vec3 vertEdge = sample0 + sample1 + sample2 - (sample6 + sample7 + sample8);
+border = sqrt((horizEdge * horizEdge) + (vertEdge * vertEdge));
+float gray = dot(sample4, W);
+if(gray > 0.30)
+color = vec3(1.0);
+else if (gray > 0.20)
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0, vTexcoordPosition.y/2.0)).rgb;
+else if (gray > 0.11)
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0 + 0.5, vTexcoordPosition.y/2.0)).rgb;
+else if (gray > 0.04)
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0, vTexcoordPosition.y/2.0 + 0.5)).rgb;
+else
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0 + 0.5, vTexcoordPosition.y/2.0  + 0.5)).rgb;
+gl_FragColor = vec4(color, 1.0);
+}
+	</script>
+	
+	<script id="sketch-shader-fs2" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+uniform sampler2D uSampler2;
+varying vec2 vTexcoordPosition;
+const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+void main()
+{
+vec3 color;
+vec3 border;
+float dx = 1./720.;
+float dy = 1./720.;
+vec4 texColour = texture2D(uSampler1,vTexcoordPosition);
+vec3 sample0 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample1 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y)).rgb;
+vec3 sample2 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y - dy)).rgb;
+vec3 sample3 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y + dy)).rgb;
+vec3 sample4 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y)).rgb;
+vec3 sample5 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y - dy)).rgb;
+vec3 sample6 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample7 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y)).rgb;
+vec3 sample8 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y - dy)).rgb;
+vec3 horizEdge = sample2 + sample5 + sample8 - (sample0 + sample3 + sample6);
+vec3 vertEdge = sample0 + sample1 + sample2 - (sample6 + sample7 + sample8);
+border = sqrt((horizEdge * horizEdge) + (vertEdge * vertEdge));
+float gray = dot(sample4, W);
+if(gray > 0.70)
+color = vec3(1.0);
+else if (gray > 0.38)
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0, vTexcoordPosition.y/2.0)).rgb;
+else if (gray > 0.15)
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0 + 0.5, vTexcoordPosition.y/2.0)).rgb;
+else if (gray > 0.03)
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0, vTexcoordPosition.y/2.0 + 0.5)).rgb;
+else
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0, vTexcoordPosition.y/2.0 + 0.5)).rgb;
+if (gray < 0.03){
+vec4 color1;
+vec4 color2;
+color1= vec4(color, 1.0);
+color2 = vec4(gray, gray, gray, 0.6);
+   float r;
+   if (2.0 * color2.r < color2.a) {
+     r = 2.0 * color2.r * color1.r + color2.r * (1.0 - color1.a) + color1.r * (1.0 - color2.a);
+   } else {
+     r = color2.a * color1.a - 2.0 * (color1.a - color1.r) * (color2.a - color2.r) + color2.r * (1.0 - color1.a) + color1.r * (1.0 - color2.a);
+   }
+   float g;
+   if (2.0 * color2.g < color2.a) {
+     g = 2.0 * color2.g * color1.g + color2.g * (1.0 - color1.a) + color1.g * (1.0 - color2.a);
+   } else {
+     g = color2.a * color1.a - 2.0 * (color1.a - color1.g) * (color2.a - color2.g) + color2.g * (1.0 - color1.a) + color1.g * (1.0 - color2.a);
+   }
+   float b;
+   if (2.0 * color2.b < color2.a) {
+     b = 2.0 * color2.b * color1.b + color2.b * (1.0 - color1.a) + color1.b * (1.0 - color2.a);
+   } else {
+     b = color2.a * color1.a - 2.0 * (color1.a - color1.b) * (color2.a - color2.b) + color2.b * (1.0 - color1.a) + color1.b * (1.0 - color2.a);
+   }
+color = vec3(r,g,b);
+}
+gl_FragColor = vec4(color, 1.0);
+}
+	</script>
+	
+	<script id="sketch-shader-fs3" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+uniform sampler2D uSampler2;
+varying vec2 vTexcoordPosition;
+const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+void main()
+{
+vec3 color;
+vec3 border;
+float dx = 1./720.;
+float dy = 1./720.;
+vec4 texColour = texture2D(uSampler1,vTexcoordPosition);
+vec3 sample0 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample1 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y)).rgb;
+vec3 sample2 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y - dy)).rgb;
+vec3 sample3 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y + dy)).rgb;
+vec3 sample4 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y)).rgb;
+vec3 sample5 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y - dy)).rgb;
+vec3 sample6 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample7 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y)).rgb;
+vec3 sample8 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y - dy)).rgb;
+vec3 horizEdge = sample2 + sample5 + sample8 - (sample0 + sample3 + sample6);
+vec3 vertEdge = sample0 + sample1 + sample2 - (sample6 + sample7 + sample8);
+border = sqrt((horizEdge * horizEdge) + (vertEdge * vertEdge));
+float gray = dot(sample4, W);
+if(gray > 0.75)
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0, vTexcoordPosition.y/2.0)).rgb;
+else if (gray > 0.50)
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0 + 0.5, vTexcoordPosition.y/2.0)).rgb;
+else if (gray > 0.25)
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0, vTexcoordPosition.y/2.0 + 0.5)).rgb;
+else
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0 + 0.5, vTexcoordPosition.y/2.0  + 0.5)).rgb;
+gl_FragColor = vec4(color, 1.0);
+}
+	</script>
+	
+	<script id="sketch-shader-fs4" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+uniform sampler2D uSampler2;
+varying vec2 vTexcoordPosition;
+const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+void main()
+{
+vec3 color;
+vec3 border;
+float dx = 1./720.;
+float dy = 1./720.;
+vec4 texColour = texture2D(uSampler1,vTexcoordPosition);
+vec3 sample0 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample1 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y)).rgb;
+vec3 sample2 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y - dy)).rgb;
+vec3 sample3 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y + dy)).rgb;
+vec3 sample4 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y)).rgb;
+vec3 sample5 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y - dy)).rgb;
+vec3 sample6 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample7 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y)).rgb;
+vec3 sample8 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y - dy)).rgb;
+vec3 horizEdge = sample2 + sample5 + sample8 - (sample0 + sample3 + sample6);
+vec3 vertEdge = sample0 + sample1 + sample2 - (sample6 + sample7 + sample8);
+border = sqrt((horizEdge * horizEdge) + (vertEdge * vertEdge));
+float gray = dot(sample4, W);
+if(gray > 0.75)
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0, vTexcoordPosition.y/2.0)).rgb;
+else if (gray > 0.50)
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0 + 0.5, vTexcoordPosition.y/2.0)).rgb;
+else if (gray > 0.25)
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0, vTexcoordPosition.y/2.0 + 0.5)).rgb;
+else if (gray > 0.05)
+{
+color= texture2D(uSampler1, vec2(vTexcoordPosition.x/2.0 + 0.5, vTexcoordPosition.y/2.0 + 0.5)).rgb;
+vec4 color1;
+vec4 color2;
+color2= vec4(color, 0.8);
+color1 = vec4(gray, gray, gray, 1.0);
+   float r;
+   if (2.0 * color2.r < color2.a) {
+     r = 2.0 * color2.r * color1.r + color2.r * (1.0 - color1.a) + color1.r * (1.0 - color2.a);
+   } else {
+     r = color2.a * color1.a - 2.0 * (color1.a - color1.r) * (color2.a - color2.r) + color2.r * (1.0 - color1.a) + color1.r * (1.0 - color2.a);
+   }
+   float g;
+   if (2.0 * color2.g < color2.a) {
+     g = 2.0 * color2.g * color1.g + color2.g * (1.0 - color1.a) + color1.g * (1.0 - color2.a);
+   } else {
+     g = color2.a * color1.a - 2.0 * (color1.a - color1.g) * (color2.a - color2.g) + color2.g * (1.0 - color1.a) + color1.g * (1.0 - color2.a);
+   }
+   float b;
+   if (2.0 * color2.b < color2.a) {
+     b = 2.0 * color2.b * color1.b + color2.b * (1.0 - color1.a) + color1.b * (1.0 - color2.a);
+   } else {
+     b = color2.a * color1.a - 2.0 * (color1.a - color1.b) * (color2.a - color2.b) + color2.b * (1.0 - color1.a) + color1.b * (1.0 - color2.a);
+   }
+color = vec3(r,g,b);
+}
+else
+color = vec3(0.0);
+gl_FragColor = vec4(color, 1.0);
+}
+	</script>
+	
+	<script id="sketch-shader-fs5" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+varying vec2 vTexcoordPosition;
+const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+void main(){
+vec3 sample = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y)).rgb;
+float gray = dot(sample, W);
+ if (gray > 0.3){
+  vec4 texColour = texture2D(uSampler0,vTexcoordPosition);
+  float blueColor = texColour.b * 63.0;
+  vec2 quad1;
+  quad1.y = floor(floor(blueColor) / 8.0);
+  quad1.x = floor(blueColor) - (quad1.y * 8.0);
+  vec2 quad2;
+  quad2.y = floor(ceil(blueColor) / 8.0);
+  quad2.x = ceil(blueColor) - (quad2.y * 8.0);
+  vec2 texPos1;
+  texPos1.x = (quad1.x * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * texColour.r);
+  texPos1.y = (quad1.y * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * texColour.g);
+  vec2 texPos2;
+  texPos2.x = (quad2.x * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * texColour.r);
+  texPos2.y = (quad2.y * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * texColour.g);
+  vec4 newColor1 = texture2D(uSampler1, texPos1);
+  vec4 newColor2 = texture2D(uSampler1, texPos2);
+  vec4 newColor = mix(newColor1, newColor2, fract(blueColor));
+  gl_FragColor = vec4(newColor.rgb, texColour.a);
+}else{
+   mat4 mat = mat4(vec4(1.0, 0.0,	0.0, 0.2), vec4(0.0, 1.0, 0.0, 0.2), vec4(0.0,	0.0, 1.0, 0.2), vec4(0.0, 0.0,	0.0, 1.0));
+   vec4 color = texture2D(uSampler0,vTexcoordPosition);
+   vec4 matrixResult = vec4(color.rgb, 1.0) * mat;
+   gl_FragColor = vec4(matrixResult.rgb, color.a);}
+}
+	</script>
+	
+	<script id="sketch-shader-fs6" type="x-shader/x-fragment">
+
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+varying vec2 vTexcoordPosition;
+highp float lum(lowp vec3 c) {
+  return dot(c, vec3(0.3, 0.59, 0.11));
+}
+vec3 setlum(lowp vec3 c, highp float l2) {
+  float d = l2 - lum(c);
+  c = c + vec3(d);
+  float l = lum(c);
+  float n = min(min(c.r, c.g), c.b);
+  float x = max(max(c.r, c.g), c.b);
+  if (n < 0.0) {
+    c.r = l + ((c.r - l) * l) / (l - n);
+    c.g = l + ((c.g - l) * l) / (l - n);
+    c.b = l + ((c.b - l) * l) / (l - n);
+  }
+  if (x > 1.0) {
+    c.r = l + ((c.r - l) * (1.0 - l)) / (x - l);
+    c.g = l + ((c.g - l) * (1.0 - l)) / (x - l);
+    c.b = l + ((c.b - l) * (1.0 - l)) / (x - l);
+  }
+  return c;
+}
+void main(){
+   vec4 color1 = texture2D(uSampler0,vTexcoordPosition);
+   vec4 color2 = texture2D(uSampler1,vTexcoordPosition);
+   gl_FragColor = vec4(color1.rgb * (1.0 - color2.a) + setlum(color2.rgb, lum(color1.rgb)) * color2.a, color1.a);
+}
+	</script>
+	
+	<script id="sketch-shader-fs7" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+varying vec2 vTexcoordPosition;
+void main(){
+   vec4 color1 = texture2D(uSampler0,vTexcoordPosition);
+   vec4 color2 = texture2D(uSampler1,vTexcoordPosition);
+   float r;
+   if (2.0 * color1.r < color1.a) {
+     r = 2.0 * color2.r * color1.r + color2.r * (1.0 - color1.a) + color1.r * (1.0 - color2.a);
+   } else {
+     r = color2.a * color1.a - 2.0 * (color1.a - color1.r) * (color2.a - color2.r) + color2.r * (1.0 - color1.a) + color1.r * (1.0 - color2.a);
+   }
+   float g;
+   if (2.0 * color1.g < color1.a) {
+     g = 2.0 * color2.g * color1.g + color2.g * (1.0 - color1.a) + color1.g * (1.0 - color2.a);
+   } else {
+     g = color2.a * color1.a - 2.0 * (color1.a - color1.g) * (color2.a - color2.g) + color2.g * (1.0 - color1.a) + color1.g * (1.0 - color2.a);
+   }
+   float b;
+   if (2.0 * color1.b < color1.a) {
+     b = 2.0 * color2.b * color1.b + color2.b * (1.0 - color1.a) + color1.b * (1.0 - color2.a);
+   } else {
+     b = color2.a * color1.a - 2.0 * (color1.a - color1.b) * (color2.a - color2.b) + color2.b * (1.0 - color1.a) + color1.b * (1.0 - color2.a);
+   }
+   gl_FragColor = vec4(r, g, b, 1.0);
+}
+	</script>
+	
+	<script id="sketch-shader-fs8" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+varying vec2 vTexcoordPosition;
+void main(){
+   vec4 color1 = texture2D(uSampler0,vTexcoordPosition);
+   vec4 color2 = texture2D(uSampler1,vTexcoordPosition);
+   gl_FragColor = color1 * (color2.a * (color1 / color1.a) + (2.0 * color2 * (1.0 - (color1 / color1.a)))) + color2 * (1.0 - color1.a) + color1 * (1.0 - color2.a);
+}
+	</script>
+	
+	<script id="sketch-shader-fs9" type="x-shader/x-fragment">
+
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+varying vec2 vTexcoordPosition;
+void main(){
+   vec4 color1 = texture2D(uSampler0,vTexcoordPosition);
+   vec4 color2 = texture2D(uSampler1,vTexcoordPosition);
+   gl_FragColor = color2 * color1 + color2 * (1.0 - color1.a) + color1 * (1.0 - color2.a);
+}
+	</script>
+	
+	<script id="sketch-shader-fs10" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+varying vec2 vTexcoordPosition;
+void main(){
+   vec4 color1 = texture2D(uSampler0,vTexcoordPosition);
+   vec4 color2 = texture2D(uSampler1,vTexcoordPosition);
+   gl_FragColor = vec4(clamp(color1.rgb + color2.rgb - vec3(1.0), vec3(0.0), vec3(1.0)), color1.a);
+}
+	</script>
+	
+	<script id="sketch-shader-fs11" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+varying vec2 vTexcoordPosition;
+void main(){
+   vec4 color1 = texture2D(uSampler0,vTexcoordPosition);
+   vec4 color2 = texture2D(uSampler1,vTexcoordPosition);
+   gl_FragColor = vec4(min(color2.rgb * color1.a, color1.rgb * color2.a) + color2.rgb * (1.0 - color1.a) + color1.rgb * (1.0 - color2.a), 1.0);
+}
+	</script>
+	
+	<script id="sketch-shader-fs12" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+varying vec2 vTexcoordPosition;
+void main(){
+   vec4 color1 = texture2D(uSampler0,vTexcoordPosition);
+   vec4 color2 = texture2D(uSampler1,vTexcoordPosition);
+   vec4 whiteColor = vec4(1.0);
+   gl_FragColor = whiteColor - (whiteColor - color1) / color2;
+}
+	</script>
+	
+	<script id="sketch-shader-fs13" type="x-shader/x-fragment">
+
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+varying vec2 vTexcoordPosition;
+void main(){
+   vec4 luminance = texture2D(uSampler0,vTexcoordPosition);
+   vec4 blur = texture2D(uSampler1,vTexcoordPosition);
+   gl_FragColor = vec4(vec3(step(blur - 0.05, luminance)), 1.0);
+}
+	</script>
+	
+	<script id="sketch-shader-fs14" type="x-shader/x-fragment">
+
+precision mediump float;
+uniform sampler2D uSampler0;
+uniform sampler2D uSampler1;
+varying vec2 vTexcoordPosition;
+void main(){
+  vec4 texColour = texture2D(uSampler0,vTexcoordPosition);
+  float blueColor = texColour.b * 63.0;
+  vec2 quad1;
+  quad1.y = floor(floor(blueColor) / 8.0);
+  quad1.x = floor(blueColor) - (quad1.y * 8.0);
+  vec2 quad2;
+  quad2.y = floor(ceil(blueColor) / 8.0);
+  quad2.x = ceil(blueColor) - (quad2.y * 8.0);
+  vec2 texPos1;
+  texPos1.x = (quad1.x * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * texColour.r);
+  texPos1.y = (quad1.y * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * texColour.g);
+  vec2 texPos2;
+  texPos2.x = (quad2.x * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * texColour.r);
+  texPos2.y = (quad2.y * 0.125) + 0.5/512.0 + ((0.125 - 1.0/512.0) * texColour.g);
+  vec4 newColor1 = texture2D(uSampler1, texPos1);
+  vec4 newColor2 = texture2D(uSampler1, texPos2);
+  vec4 newColor = mix(newColor1, newColor2, fract(blueColor));
+  gl_FragColor = vec4(newColor.rgb, texColour.a);
+}
+	</script>
+	
+	<script id="effects-shader-fs0" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+varying vec2 vTexcoordPosition;
+
+
+const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+
+vec3 StripsPattern(vec2 position)
+{
+vec2 p = (position - 0.5) * 500.;
+
+float angle = 0.7;
+vec2 direction = vec2(cos(angle), sin(angle));
+
+float brightness = cos(dot(p, direction));
+vec3 color = vec3(1.-brightness);
+
+
+float gray = dot(color, W);
+if(gray > 0.5)
+return vec3(220./255., 220./255., 220./255.);
+else
+return vec3(120./255., 120./255., 120./255.);
+}
+
+void main()
+{
+vec3 color;	
+
+//find the edge and draw
+vec3 border;	
+float dx = 1./720.;
+float dy = 1./720.;
+vec3 sample0 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample1 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y)).rgb;
+vec3 sample2 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y - dy)).rgb;
+vec3 sample3 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y + dy)).rgb;
+vec3 sample4 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y)).rgb;
+vec3 sample5 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y - dy)).rgb;
+vec3 sample6 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample7 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y)).rgb;
+vec3 sample8 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y - dy)).rgb;
+
+vec3 horizEdge = sample2 + sample5 + sample8 - (sample0 + sample3 + sample6);
+vec3 vertEdge = sample0 + sample1 + sample2 - (sample6 + sample7 + sample8);
+
+border = sqrt((horizEdge * horizEdge) + (vertEdge * vertEdge));
+
+float gray = dot(sample4, W);
+
+if (border.r > 0.5 || border.g > 0.5 || border.b > 0.5){
+color = vec3(0.0) ;
+}else{
+if(gray < 0.25)
+color = vec3(120./255., 20./255., 20./255.);
+else if(gray >= 0.25 && gray < 0.4)
+color = vec3(20./255., 20./255., 120./255.);
+else
+color = vec3(1.);
+}
+
+gl_FragColor = vec4(color, 1.0);
+}
+
+
+	</script>
+	
+	<script id="effects-shader-fs1" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+varying vec2 vTexcoordPosition;
+
+
+const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+
+vec3 StripsPattern(vec2 position)
+{
+vec2 p = (position - 0.5) * 500.;
+
+float angle = 0.7;
+vec2 direction = vec2(cos(angle), sin(angle));
+
+float brightness = cos(dot(p, direction));
+vec3 color = vec3(1.-brightness);
+
+
+float gray = dot(color, W);
+if(gray > 0.5)
+return vec3(220./255., 220./255., 220./255.);
+else
+return vec3(120./255., 120./255., 120./255.);
+}
+
+void main()
+{
+vec3 color;	
+
+//find the edge and draw
+vec3 border;	
+float dx = 1./720.;
+float dy = 1./720.;
+vec3 sample0 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample1 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y)).rgb;
+vec3 sample2 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y - dy)).rgb;
+vec3 sample3 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y + dy)).rgb;
+vec3 sample4 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y)).rgb;
+vec3 sample5 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y - dy)).rgb;
+vec3 sample6 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample7 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y)).rgb;
+vec3 sample8 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y - dy)).rgb;
+
+vec3 horizEdge = sample2 + sample5 + sample8 - (sample0 + sample3 + sample6);
+vec3 vertEdge = sample0 + sample1 + sample2 - (sample6 + sample7 + sample8);
+
+border = sqrt((horizEdge * horizEdge) + (vertEdge * vertEdge));
+
+float gray = dot(sample4, W);
+
+if (border.r > 0.5 || border.g > 0.5 || border.b > 0.5){
+color = vec3(0.0) ;
+}else{
+if(gray < 0.25)
+color = vec3(20./255., 20./255., 20./255.);
+else if(gray >= 0.25 && gray < 0.4)
+color = StripsPattern(vTexcoordPosition);
+else
+color = vec3(1.);
+}
+
+gl_FragColor = vec4(color, 1.0);
+}
+
+
+	</script>
+	
+	<script id="effects-shader-fs2" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+varying vec2 vTexcoordPosition;
+const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+
+float divation(float a, float b){
+float f = floor(a/b);
+float c = ceil(a/b);
+return min((a - b*f), (c*b - a));
+}
+float locate(vec2 pos, float dx, float dy, float radius, float interval){
+float x = pos.x/dx;
+float y = pos.y/dy;
+float mod_x = divation(x, interval);
+float mod_y = divation(y, interval);
+float mod_r = sqrt(mod_x*mod_x + mod_y*mod_y);
+if(mod_r < radius)
+return 0.0;
+else
+return mod_r;
+}
+vec3 overlay(vec3 overlayComponent, vec3 underlayComponent, float alpha) {
+vec3 underlay = underlayComponent * alpha;
+return underlay * (underlay + (2.0 * overlayComponent * (1.0 - underlay)));
+}
+vec3 brightness(vec3 color, float brightness) {
+float scaled = brightness / 2.0;
+if (scaled < 0.0) {
+return color * (1.0 + scaled);
+} else {
+return color + ((1.0 - color) * scaled);
+}
+}
+vec3 contrast(vec3 color, float contrast) {
+const float PI = 3.14159265;
+return min(vec3(1.0), ((color - 0.5) * (tan((contrast + 1.0) * PI / 4.0) ) + 0.5));
+}
+vec3 saturation(vec3 color, float sat) {
+float luminance = dot(color, W);
+vec3 gray = vec3(luminance, luminance, luminance);
+vec3 satColor = mix(gray, color, sat+1.0);
+return satColor;
+}
+void main()
+{
+vec3 color;	
+float dx = 1./720.;
+float dy = 1./720.;
+color = texture2D(uSampler0, vTexcoordPosition).rgb;
+float gray = dot(color, W);
+//if bright, set to white
+if(gray >= 0.9)
+color = vec3(1.);
+//middle gray, overlay with dot!
+if(gray >=0.4 && gray < 0.6){
+if(locate(vTexcoordPosition, dx, dy, 4., 16.) == 0.0)
+color = overlay(vec3(0.,0.,0.8), color, 1.0);
+}
+//if dark, set to black
+if(gray <= 0.1)
+color = vec3(0.);
+color = brightness(color, 0.1);
+color = contrast(color, 0.2);
+color = saturation(color, 0.3);
+gl_FragColor = vec4(color, 1.0);
+}
+
+
+	</script>
+	
+	<script id="effects-shader-fs3" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+varying vec2 vTexcoordPosition;
+
+float randd(vec2 uv) {
+ 
+    float a = dot(uv, vec2(92., 80.));
+    float b = dot(uv, vec2(41., 62.));
+    
+    float x = sin(a) + cos(b) * 51.;
+    return fract(x);
+    
+}
+
+void main()
+{
+	vec2 uv = vTexcoordPosition;
+    
+	vec2 rnd = vec2(randd(uv), randd(uv));
+    
+    uv += rnd * .02;
+    gl_FragColor = texture2D(uSampler0, uv);
+}
+
+
+	</script>
+	
+	<script id="effects-shader-fs4" type="x-shader/x-fragment">
+precision mediump float;
+ 
+uniform sampler2D uSampler0;
+varying vec2 vTexcoordPosition; // Texcoords
+
+float uScale = 1.0; // For imperfect, isotropic anti-aliasing in
+float uYrot = 1.0;  // absence of dFdx() and dFdy() functions
+ 
+float frequency = 80.0; // Needed globally for lame version of aastep()
+ 
+float aastep(float threshold, float value) {
+#ifdef GL_OES_standard_derivatives
+  float afwidth = 0.7 * length(vec2(dFdx(value), dFdy(value)));
+#else
+  float afwidth = frequency * (1.0/200.0) / uScale / cos(uYrot);
+#endif
+  return smoothstep(threshold-afwidth, threshold+afwidth, value);
+}
+ 
+void main() {
+    // Distance to nearest point in a grid of
+    // (frequency x frequency) points over the unit square
+    vec2 st2 = mat2(0.707, -0.707, 0.707, 0.707) * vTexcoordPosition;
+    vec2 nearest = 2.0*fract(frequency * st2) - 1.0;
+    float dist = length(nearest);
+    // Use a texture to modulate the size of the dots
+    vec3 texcolor = texture2D(uSampler0, vTexcoordPosition).rgb; // Unrotated coords
+    float radius = sqrt(1.0-length(texcolor.rgb)); // Use green channel
+    vec3 white = vec3(1.0, 1.0, 1.0);
+    vec3 black = vec3(0.3, 0.3, 0.3);
+    vec3 fragcolor = mix(black, white, aastep(radius, dist));
+    gl_FragColor = vec4(fragcolor, 1.0);
+}
+ 
+
+
+
+	</script>
+	
+	<script id="effects-shader-fs5" type="x-shader/x-fragment">
+precision mediump float;
+
+uniform sampler2D uSampler0;
+varying vec2 vTexcoordPosition;
+
+const int radius = 6;
+
+float rand(vec2 co){
+	// implementation found at: lumina.sourceforge.net/Tutorials/Noise.html
+	return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+float noise2f( in vec2 p )
+{
+	vec2 ip = vec2(floor(p));
+	vec2 u = fract(p);
+	// http://www.iquilezles.org/www/articles/morenoise/morenoise.htm
+	u = u*u*(3.0-2.0*u);
+	//u = u*u*u*((6.0*u-15.0)*u+10.0);
+	
+	float res = mix(
+		mix(rand(ip),  rand(ip+vec2(1.0,0.0)),u.x),
+		mix(rand(ip+vec2(0.0,1.0)),   rand(ip+vec2(1.0,1.0)),u.x),
+		u.y)
+	;
+	return 0.0;
+	//return 2.0* (res-10.7);
+}
+
+float fbm(vec2 c) {
+	float f = 0.0;
+	float w = 1.0;
+	for (int i = 0; i < 8; i++) {
+		f+= w*noise2f(c);
+		c*=2.0;
+		w*=0.5;
+	}
+	return f;
+}
+
+
+
+vec2 cMul(vec2 a, vec2 b) {
+	return vec2( a.x*b.x -  a.y*b.y,a.x*b.y + a.y * b.x);
+}
+
+float pattern(  vec2 p, out vec2 q, out vec2 r )
+{
+	q.x = fbm( p ); // @SLIDER: 5. could represent velocity of water
+	q.y = fbm( p + vec2(1.0));
+	
+	r.x = fbm( p +1.0*q + vec2(1.7,9.2)+0.15*1.0 * 2. );
+	r.y = fbm( p+ 1.0*q + vec2(8.3,2.8)+0.126*1.0 * 2.);
+	//r = cMul(q,q+0.1*time);
+	return fbm(p +1.0*r);
+}
+
+const vec3 color1 = vec3(0.101961,0.619608,0.666667);
+const vec3 color2 = vec3(0.666667,0.666667,0.498039);
+const vec3 color3 = vec3(0,0,0.164706);
+const vec3 color4 = vec3(0.666667,1,1);
+
+vec3 darken( vec3 s, vec3 d )
+{
+	return min(s,d);
+}
+
+vec3 multiply( vec3 s, vec3 d )
+{
+	return s*d;
+}
+
+vec3 colorBurn( vec3 s, vec3 d )
+{
+	return 1.0 - (1.0 - d) / s;
+}
+
+vec3 linearBurn( vec3 s, vec3 d )
+{
+	return s + d - 1.0;
+}
+
+vec3 darkerColor( vec3 s, vec3 d )
+{
+	return (s.x + s.y + s.z < d.x + d.y + d.z) ? s : d;
+}
+
+vec3 lighten( vec3 s, vec3 d )
+{
+	return max(s,d);
+}
+
+vec3 screen( vec3 s, vec3 d )
+{
+	return s + d - s * d;
+}
+
+vec3 colorDodge( vec3 s, vec3 d )
+{
+	return d / (1.0 - s);
+}
+
+vec3 linearDodge( vec3 s, vec3 d )
+{
+	return s + d;
+}
+
+vec3 lighterColor( vec3 s, vec3 d )
+{
+	return (s.x + s.y + s.z > d.x + d.y + d.z) ? s : d;
+}
+
+float overlay( float s, float d )
+{
+	return (d < 0.5) ? 2.0 * s * d : 1.0 - 2.0 * (1.0 - s) * (1.0 - d);
+}
+
+vec3 overlay( vec3 s, vec3 d )
+{
+	vec3 c;
+	c.x = overlay(s.x,d.x);
+	c.y = overlay(s.y,d.y);
+	c.z = overlay(s.z,d.z);
+	return c;
+}
+
+float softLight( float s, float d )
+{
+	return (s < 0.5) ? d - (1.0 - 2.0 * s) * d * (1.0 - d) 
+		: (d < 0.25) ? d + (2.0 * s - 1.0) * d * ((16.0 * d - 12.0) * d + 3.0) 
+					 : d + (2.0 * s - 1.0) * (sqrt(d) - d);
+}
+
+vec3 softLight( vec3 s, vec3 d )
+{
+	vec3 c;
+	c.x = softLight(s.x,d.x);
+	c.y = softLight(s.y,d.y);
+	c.z = softLight(s.z,d.z);
+	return c;
+}
+
+float hardLight( float s, float d )
+{
+	return (s < 0.5) ? 2.0 * s * d : 1.0 - 2.0 * (1.0 - s) * (1.0 - d);
+}
+
+vec3 hardLight( vec3 s, vec3 d )
+{
+	vec3 c;
+	c.x = hardLight(s.x,d.x);
+	c.y = hardLight(s.y,d.y);
+	c.z = hardLight(s.z,d.z);
+	return c;
+}
+
+float vividLight( float s, float d )
+{
+	return (s < 0.5) ? 1.0 - (1.0 - d) / (2.0 * s) : d / (2.0 * (1.0 - s));
+}
+
+vec3 vividLight( vec3 s, vec3 d )
+{
+	vec3 c;
+	c.x = vividLight(s.x,d.x);
+	c.y = vividLight(s.y,d.y);
+	c.z = vividLight(s.z,d.z);
+	return c;
+}
+
+vec3 linearLight( vec3 s, vec3 d )
+{
+	return 2.0 * s + d - 1.0;
+}
+
+float pinLight( float s, float d )
+{
+	return (2.0 * s - 1.0 > d) ? 2.0 * s - 1.0 : (s < 0.5 * d) ? 2.0 * s : d;
+}
+
+vec3 pinLight( vec3 s, vec3 d )
+{
+	vec3 c;
+	c.x = pinLight(s.x,d.x);
+	c.y = pinLight(s.y,d.y);
+	c.z = pinLight(s.z,d.z);
+	return c;
+}
+
+vec3 hardMix( vec3 s, vec3 d )
+{
+	return floor(s + d);
+}
+
+vec3 difference( vec3 s, vec3 d )
+{
+	return abs(d - s);
+}
+
+vec3 exclusion( vec3 s, vec3 d )
+{
+	return s + d - 2.0 * s * d;
+}
+
+vec3 subtract( vec3 s, vec3 d )
+{
+	return s - d;
+}
+
+vec3 divide( vec3 s, vec3 d )
+{
+	return s / d;
+}
+
+//	rgb<-->hsv functions by Sam Hocevar
+//	http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
+vec3 rgb2hsv(vec3 c)
+{
+	vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+	vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+	vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+	
+	float d = q.x - min(q.w, q.y);
+	float e = 1.0e-10;
+	return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+vec3 hsv2rgb(vec3 c)
+{
+	vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+	vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+	return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+
+vec3 hue( vec3 s, vec3 d )
+{
+	d = rgb2hsv(d);
+	d.x = rgb2hsv(s).x;
+	return hsv2rgb(d);
+}
+
+vec3 color( vec3 s, vec3 d )
+{
+	s = rgb2hsv(s);
+	s.z = rgb2hsv(d).z;
+	return hsv2rgb(s);
+}
+
+vec3 saturation( vec3 s, vec3 d )
+{
+	d = rgb2hsv(d);
+	d.y = rgb2hsv(s).y;
+	return hsv2rgb(d);
+}
+
+vec3 luminosity( vec3 s, vec3 d )
+{
+	float dLum = dot(d, vec3(0.3, 0.59, 0.11));
+	float sLum = dot(s, vec3(0.3, 0.59, 0.11));
+	float lum = sLum - dLum;
+	vec3 c = d + lum;
+	float minC = min(min(c.x, c.y), c.z);
+	float maxC = max(max(c.x, c.y), c.z);
+	if(minC < 0.0) return sLum + ((c - sLum) * sLum) / (sLum - minC);
+	else if(maxC > 1.0) return sLum + ((c - sLum) * (1.0 - sLum)) / (maxC - sLum);
+	else return c;
+}
+vec3 sample(const int x, const int y, vec2 delta, vec2 vTexcoordPosition)
+{
+	vec2 uv = (vTexcoordPosition.xy + vec2(x, y));
+	uv = uv + delta;
+	//uv.y = 1.0 - uv.y;
+	
+	return texture2D(uSampler0, uv).xyz;
+}
+
+
+
+ void main(void)  
+ {
+	 vec2 src_size = vec2 (0.001, 0.001);
+     vec2 uv = vTexcoordPosition;
+     float n = float((radius + 1) * (radius + 1));
+     int i; 
+	 int j;
+     vec3 m0 = vec3(0.0); vec3 m1 = vec3(0.0); vec3 m2 = vec3(0.0); vec3 m3 = vec3(0.0);
+     vec3 s0 = vec3(0.0); vec3 s1 = vec3(0.0); vec3 s2 = vec3(0.0); vec3 s3 = vec3(0.0);
+     vec3 c;
+
+	 	 vec2 q;
+	vec2 r;
+	vec2 c3 = 1000.0*vTexcoordPosition;
+	float f = pattern(c3*0.01,q,r);
+	vec3 col = mix(color1,color2,clamp((f*f)*4.0,0.0,1.0));
+	col = color2;
+	col = mix(col,color3,clamp(length(q),0.0,1.0));
+	col = mix(col,color4,clamp(length(r.x),0.0,1.0));
+	
+	vec3 col2 = (0.2*f*f*f+0.6*f*f+0.5*f)*col;
+	vec2 delta =  vec2(0.002, 0.002);
+	 
+	const vec3 lumi = vec3(0.2126, 0.7152, 0.0722);
+	
+	vec3 hc =sample(-1,-1,delta,vTexcoordPosition) *  1.0 + sample( 0,-1,delta,vTexcoordPosition) *  2.0
+		 	+sample( 1,-1,delta,vTexcoordPosition) *  1.0 + sample(-1, 1,delta,vTexcoordPosition) * -1.0
+		 	+sample( 0, 1,delta,vTexcoordPosition) * -2.0 + sample( 1, 1,delta,vTexcoordPosition) * -1.0;
+		
+	vec3 vc =sample(-1,-1,delta,vTexcoordPosition) *  1.0 + sample(-1, 0,delta,vTexcoordPosition) *  2.0
+		 	+sample(-1, 1,delta,vTexcoordPosition) *  1.0 + sample( 1,-1,delta,vTexcoordPosition) * -1.0
+		 	+sample( 1, 0,delta,vTexcoordPosition) * -2.0 + sample( 1, 1,delta,vTexcoordPosition) * -1.0;
+	
+	vec3 c2 = sample(0, 0,delta,vTexcoordPosition);
+	
+	c2 -= pow(c2, vec3(0.2126, 0.7152, 0.0722)) * pow(dot(lumi, vc*vc + hc*hc), 0.5);
+	
+
+	uv = uv + delta; 
+	 
+     for (int j = -radius; j <= 0; ++j)  {
+         for (int i = -radius; i <= 0; ++i)  {
+             c = texture2D(uSampler0, uv + vec2(i,j) * src_size).rgb;
+             m0 += c;
+             s0 += c * c;
+         }
+     }
+
+     for (int j = -radius; j <= 0; ++j)  {
+         for (int i = 0; i <= radius; ++i)  {
+             c = texture2D(uSampler0, uv + vec2(i,j) * src_size).rgb;
+             m1 += c;
+             s1 += c * c;
+         }
+     }
+
+     for (int j = 0; j <= radius; ++j)  {
+         for (int i = 0; i <= radius; ++i)  {
+             c = texture2D(uSampler0, uv + vec2(i,j) * src_size).rgb;
+             m2 += c;
+             s2 += c * c;
+         }
+     }
+
+     for (int j = 0; j <= radius; ++j)  {
+         for (int i = -radius; i <= 0; ++i)  {
+             c = texture2D(uSampler0, uv + vec2(i,j) * src_size).rgb;
+             m3 += c;
+             s3 += c * c;
+         }
+     }
+
+
+	 vec4 result;
+     float min_sigma2 = 1e+2;
+     m0 /= n;
+     s0 = abs(s0 / n - m0 * m0);
+
+     float sigma2 = s0.r + s0.g + s0.b;
+     if (sigma2 < min_sigma2) {
+         min_sigma2 = sigma2;
+         result = vec4(m0, 1.0);
+     }
+
+     m1 /= n;
+     s1 = abs(s1 / n - m1 * m1);
+
+     sigma2 = s1.r + s1.g + s1.b;
+     if (sigma2 < min_sigma2) {
+         min_sigma2 = sigma2;
+         result = vec4(m1, 1.0);
+     }
+
+     m2 /= n;
+     s2 = abs(s2 / n - m2 * m2);
+
+     sigma2 = s2.r + s2.g + s2.b;
+     if (sigma2 < min_sigma2) {
+         min_sigma2 = sigma2;
+         result = vec4(m2, 1.0);
+     }
+
+     m3 /= n;
+     s3 = abs(s3 / n - m3 * m3);
+
+     sigma2 = s3.r + s3.g + s3.b;
+     if (sigma2 < min_sigma2) {
+         min_sigma2 = sigma2;
+         result = vec4(m3, 1.0);
+     }
+	
+
+	vec4 res2 = vec4(overlay(screen( result.rgb,c2.rgb), result.rgb) , 1.0);
+
+	vec3 col3 = texture2D(uSampler0, vTexcoordPosition + col2.xy * 0.05 ).xyz;
+	
+	gl_FragColor = vec4(saturation(col3,res2.rgb ),1.0);
+	 
+	// fragColor = res2;
+	 
+ }
+
+	
+
+
+
+
+
+	</script>
+	
+	<script id="effects-shader-fs6" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+varying vec2 vTexcoordPosition;
+
+vec3 noise(float p){return texture2D(uSampler0,vec2(p,.0)).xyz;}
+vec3 noise(vec2 p){return texture2D(uSampler0, p).xyz;}
+vec3 noise(vec3 p){float m = mod(p.z,1.0);float s = p.z-m; float sprev = s-1.0;if (mod(s,2.0)==1.0) { s--; sprev++; m = 1.0-m; };return mix(texture2D(uSampler0,p.xy+noise(sprev).yz).xyz,texture2D(uSampler0,p.xy+noise(s).yz).xyz,m);}
+
+
+void main()
+{
+	vec2 uv = vTexcoordPosition;
+	
+	//vec3 color = texture2D(uSampler0,uv).xyz;
+	vec3 color = vec3(1.0);
+	float iGlobalTime = 1.0;
+	
+	float var_size = 0.66;
+	float var_alpha = .8;
+	float var_distr = 1.0;
+	
+	for (float q=.0; q<1.0; q+=.01)
+	{
+		float i = q;
+		vec2 size = vec2(1.00-pow(i,var_distr)*.97) * var_size;
+		size.x *= 1024.0/720.0;
+		
+		vec2 m = mod(uv+noise(q).yz*24.0,size);
+		
+		vec2 s = uv-m;
+		
+		vec2 offs = (.2+.6*noise(s*1466.1550+vec2(iGlobalTime*.1)).xy);
+		vec2 p = m/size - offs;
+		vec3 sample_color = texture2D(uSampler0,s + .5*size).xyz;
+		
+		float alpha = 1.0-(length(p)-.2)*1024.0*length(size)*.5;
+		alpha = min(var_alpha,max(.0,alpha));
+		color = mix(color,sample_color,alpha);
+		
+	}
+
+	gl_FragColor = vec4(color,1.0);
+}
+	</script>
+	
+	<script id="effects-shader-fs7" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+varying vec2 vTexcoordPosition;
+
+
+const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+
+vec3 StripsPattern(vec2 position)
+{
+vec2 p = (position - 0.5) * 500.;
+
+float angle = 0.7;
+vec2 direction = vec2(cos(angle), sin(angle));
+
+float brightness = cos(dot(p, direction));
+vec3 color = vec3(1.-brightness);
+
+
+float gray = dot(color, W);
+if(gray > 0.5)
+return vec3(220./255., 220./255., 220./255.);
+else
+return vec3(120./255., 120./255., 120./255.);
+}
+
+void main()
+{
+vec3 color;	
+
+//find the edge and draw
+vec3 border;	
+float dx = 1./720.;
+float dy = 1./720.;
+vec3 sample0 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample1 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y)).rgb;
+vec3 sample2 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y - dy)).rgb;
+vec3 sample3 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y + dy)).rgb;
+vec3 sample4 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y)).rgb;
+vec3 sample5 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y - dy)).rgb;
+vec3 sample6 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample7 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y)).rgb;
+vec3 sample8 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y - dy)).rgb;
+
+vec3 horizEdge = sample2 + sample5 + sample8 - (sample0 + sample3 + sample6);
+vec3 vertEdge = sample0 + sample1 + sample2 - (sample6 + sample7 + sample8);
+
+border = sqrt((horizEdge * horizEdge) + (vertEdge * vertEdge));
+
+float gray = dot(sample4, W);
+
+if (border.r > 0.5 || border.g > 0.5 || border.b > 0.5){
+color = vec3(0.0) ;
+}else{
+if(gray < 0.1)
+color = vec3(gray/2.0);
+else if(gray >= 0.1 && gray < 0.7)
+color = vec3(gray*2.0);
+else
+color = vec3(1.);
+}
+
+gl_FragColor = vec4(color, 1.0);
+}
+
+
+	</script>
+	
+	<script id="effects-shader-fs8" type="x-shader/x-fragment">
+precision mediump float;
+uniform sampler2D uSampler0;
+varying vec2 vTexcoordPosition;
+
+float SCurve (float value, float amount, float correction) {
+
+	float curve = 1.0; 
+
+    if (value < 0.5)
+    {
+
+        curve = pow(value, amount) * pow(2.0, amount) * 0.5; 
+    }
+        
+    else
+    { 	
+    	curve = 1.0 - pow(1.0 - value, amount) * pow(2.0, amount) * 0.5; 
+    }
+
+    return pow(curve, correction);
+}
+
+
+void main()
+{
+	vec2 uv = vTexcoordPosition;
+	
+    vec4 C = texture2D(uSampler0, uv);
+   	vec4 A = C; 
+    
+    	// Writing this as a sort of 'note to self' 
+    
+    	// Applies an S curve to the image, you can adjust the steepness
+    	// of the curve with the control values SCurve(input, steepness, gamma)
+    
+    	C = vec4(SCurve(C.r, 4.0, 1.0), SCurve(C.g, 3.7, 0.7), SCurve(C.b, 2.6, 0.6), 1.0); 
+    
+    gl_FragColor = C;
+}
+
+
+
+
+
+	</script>
+	
+	<script id="effects-shader-fs9" type="x-shader/x-fragment">
+	precision mediump float;
+
+uniform sampler2D uSampler0;
+varying vec2 vTexcoordPosition;
+
+const float steps = 2.0;
+const float dotsize = 1.0 / steps ;
+const float half_step = dotsize / 2.0;
+
+
+void main(void)
+{
+    vec2 img    = vTexcoordPosition * steps;
+    vec4 pel    = texture2D( uSampler0, img );
+    
+    vec4 tint;
+    
+    // Magenta Blue
+    // Cyan    Yellow
+    int ofs = int(vTexcoordPosition.x*steps) + int(vTexcoordPosition.y*steps)*2;
+    if    (0 == ofs) {
+        tint = vec4(1.0,1.0,0.0,0.0);
+    } else if (1 == ofs) {
+        tint = vec4(0.0,0.0,1.0,0.0);
+    } else if (2 == ofs) {
+        tint = vec4(1.0,0.0,1.0,0.0);
+    } else { // (3 == ofs)
+        tint = vec4(0.0,1.0,1.0,0.0);
+    };
+    
+    float gray  = dot(pel.rgb,
+                      vec3(0.3, 0.59, 0.11));
+    gl_FragColor = mix( pel, tint, gray );
+}
+
+
+	</script>	
+	
+	<script id="effects-shader-fs10" type="x-shader/x-fragment">
+	precision mediump float;
+uniform sampler2D uSampler0;
+varying vec2 vTexcoordPosition;
+
+
+const vec3 W = vec3(0.2125, 0.7154, 0.0721);
+
+vec3 StripsPattern(vec2 position)
+{
+vec2 p = (position - 0.5) * 500.;
+
+float angle = 0.7;
+vec2 direction = vec2(cos(angle), sin(angle));
+
+float brightness = cos(dot(p, direction));
+vec3 color = vec3(1.-brightness);
+
+
+float gray = dot(color, W);
+if(gray > 0.5)
+return vec3(220./255., 220./255., 220./255.);
+else
+return vec3(120./255., 120./255., 120./255.);
+}
+
+void main()
+{
+vec3 color;	
+vec3 irgb = texture2D(uSampler0, vTexcoordPosition).rgb;
+
+//find the edge and draw
+vec3 border;	
+float dx = 1./720.;
+float dy = 1./720.;
+vec3 sample0 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample1 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y)).rgb;
+vec3 sample2 = texture2D(uSampler0, vec2(vTexcoordPosition.x - dx, vTexcoordPosition.y - dy)).rgb;
+vec3 sample3 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y + dy)).rgb;
+vec3 sample4 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y)).rgb;
+vec3 sample5 = texture2D(uSampler0, vec2(vTexcoordPosition.x, vTexcoordPosition.y - dy)).rgb;
+vec3 sample6 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y + dy)).rgb;
+vec3 sample7 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y)).rgb;
+vec3 sample8 = texture2D(uSampler0, vec2(vTexcoordPosition.x + dx, vTexcoordPosition.y - dy)).rgb;
+
+vec3 horizEdge = sample2 + sample5 + sample8 - (sample0 + sample3 + sample6);
+vec3 vertEdge = sample0 + sample1 + sample2 - (sample6 + sample7 + sample8);
+
+border = sqrt((horizEdge * horizEdge) + (vertEdge * vertEdge));
+
+float gray = dot(sample4, W);
+
+if (border.r > 0.5 || border.g > 0.5 || border.b > 0.5){
+color = vec3(0.0) ;
+}else{
+if(gray < 0.20)
+color = vec3(20./255., 20./255., 20./255.);
+else 
+color = vec3(1.);
+}
+
+gl_FragColor = vec4(color, 1.0);
+}
+
+
+	</script>	
+	
+	
+	<script id="effects2-shader-fs0" type="x-shader/x-fragment">
+	
+	</script>
+
+	
+	<script id="effects2-shader-fs1" type="x-shader/x-fragment">
+	
+	</script>
+
+	
+	<script id="effects2-shader-fs2" type="x-shader/x-fragment">
+	
+	</script>
+
+	
+	<script id="effects2-shader-fs3" type="x-shader/x-fragment">
+	
+	</script>
+
+	
+	<script id="effects2-shader-fs4" type="x-shader/x-fragment">
+	
+	</script>
+
+	
+	<script id="effects2-shader-fs5" type="x-shader/x-fragment">
+	
+	</script>
+
+	
+	<script id="effects2-shader-fs6" type="x-shader/x-fragment">
+	
+	</script>
+
+	
+	<script id="effects2-shader-fs7" type="x-shader/x-fragment">
+	
+	</script>
+
+	
+	<script id="effects2-shader-fs8" type="x-shader/x-fragment">
+	
+	</script>
+
+	
+
+
+	
+	<head>
+		<script src="jquery.min.js"></script>
+		<script src="sylvester.js"></script>
+		<script src="glUtils.js"></script>
+		<script src="gltexture.js"></script>
+		<script src="glslshader.js"></script>
+		<script src="glframebufferobject.js"></script>
+		<script src="webgl2Dapp.js"></script>
+		<script src="script.js"></script>
+	</head>
+	<body onload="init()">
+		<canvas id="gl_canvas" width="1024" height="1024">
+		</canvas>
+		<br>
+		<select id='mode' style="width: 30%" onchange="set_mode();">
+			<option value="basic" img_no=1>Basic</option>
+			<option value="lighted" img_no=1>Lighting</option>
+		    <option value="light_with_normal_map" img_no=2 identical_dimensions=1>Lighting with normal map</option>
+		    <option value="twirl" img_no=1>Twirl</option>
+		    <option value="mirror" img_no=1>Mirror</option>
+		    <option value="blur" img_no=1>Blur</option>
+		    <option value="triangle_blur" img_no=1>Triangle Blur</option>
+		    <option value="focus_blur" img_no=1>Focus Blur</option>
+		    <option value="grey_scale" img_no=1>Grey Scale</option>
+			<option value="fish_eye" img_no=1>Fish Eye</option>
+			<option value="barrel_distortion" img_no=1>Barrel Distortion</option>
+			<option value="radial_wave" img_no=1>Radial Waves</option>
+			<option value="toon" img_no=1>Toon</option>
+			<option value="toon_2" img_no=1>Toon 2</option>
+			<option value="toon_greenish" img_no=1>Alien Green Toon</option>
+			<option value="a_sketch" img_no=1>A-Sketch</option>
+			<option value="a_sketch2" img_no=1>A-Sketch 2</option>
+			<option value="sharpen" img_no=1>Sharpen</option>
+			<option value="denoise" img_no=1>Denoise</option>
+			<option value="vignette" img_no=1>Vignette</option>
+			<option value="highlight_shadow" img_no=1>Highlight Shadow</option>
+			<option value="monochrome" img_no=1>Monochrome</option>
+			<option value="overlay" img_no=1>Overlay</option>
+			<option value="sketch" >Sketch</option>
+			<option value="effects" >Effects</option>
+			<option value="edge" >Edge</option>
+			<option value="frame" >Frame</option>
+			<option value="colored_sketch_with_vignette">Colored Sketch With Vignette</option>
+			<option value="heavy_outlined_sketch">Outlined Sketch</option>
+			<option value="water_paint_with_vignette">Water Paint With Vignette</option>
+			<option value="realistic_water_paint_with_vignette">Realistic Water Paint With Vignette</option>
+		</select> 
+		<button onclick="apply_screen_to_texture();">Apply Changes</button> <button onclick="reset_texture();">Reset Changes</button><br>
+
+		
+		<div id="water_paint_with_vignette" style="display: none">
+			<input id="wpwv_toonEdgeThreshold" type="range" step=0.01 min="0.0" max="1.4" style='width:30%' value='0.2' oninput='APP.toonEdgeThreshold = $(this).val(); update_screen();'> Edge Threshold <br>
+			<input id="wpwv_vignetteRadius" type="range" step=0.01 min="0.2" max="0.7" style='width:30%'  oninput='APP.vignetteStart = $(this).val(); update_screen();'> Vignette Radius<br>
+			<input id="wpwv_vignetteDispersion" type="range" step=0.01 min="0.01" max="1" style='width:30%'  oninput='APP.vignetteRange = $(this).val(); update_screen();'> Vignette Dispersion<br>
+		</div>
+		<div id="realistic_water_paint_with_vignette" style="display: none">
+			<input id="rwpwv_vignetteRadius" type="range" step=0.01 min="0.2" max="0.7" style='width:30%'  oninput='APP.vignetteStart = $(this).val(); update_screen();'> Vignette Radius<br>
+			<input id="rwpwv_vignetteDispersion" type="range" step=0.01 min="0.01" max="1" style='width:30%'  oninput='APP.vignetteRange = $(this).val(); update_screen();'> Vignette Dispersion<br>
+		</div>
+		<div id="colored_sketch_with_vignette" style="display: none">
+			<input id="cswv_sharpenAmount" type="range" step=0.01 min="0" max="5" style='width:30%' oninput='APP.sharpenAmount = $(this).val(); update_screen();'> Sharpen Amount <br>
+			<input id="cswv_vignetteRadius" type="range" step=0.01 min="0.2" max="0.7" style='width:30%'  oninput='APP.vignetteStart = $(this).val(); update_screen();'> Vignette Radius<br>
+			<input id="cswv_vignetteDispersion" type="range" step=0.01 min="0.01" max="1" style='width:30%'  oninput='APP.vignetteRange = $(this).val(); update_screen();'> Vignette Dispersion<br>
+			<input id="cswv_toonEdgeThreshold" type="range" step=0.01 min="0.0" max="1.4" style='width:30%' value='0.2' oninput='APP.toonEdgeThreshold = $(this).val(); update_screen();'> Edge Threshold <br>
+		</div>
+		<div id="heavy_outlined_sketch" style="display: none">
+			<input id="hos_HSVPointer" type="range" step=0.01 min="0" max="1" style='width:30%' value='0' oninput='APP.HSVPointer = $(this).val(); update_screen();'> HSV Pointer <br>
+			<input id="hos_HSVWidth" type="range" step=0.01 min="0" max="1" style='width:30%' value='0' oninput='APP.HSVWidth = $(this).val(); update_screen();'> HSV Width <br>
+		</div>
+		<div id="monochrome" style="display: none">
+			<input id="monochromeIntensity" type="range" step=0.01 min="0" max="5" style='width:30%'  oninput='APP.monochromeIntensity = $(this).val(); update_screen();'> Intensity<br>
+			<input id="monochromeColor" onchange="APP.monochromeColor = hex_to_rgb($(this).val()); update_screen();" value="#000000" type="color"> Color<br>
+		</div>
+		<div id="edge" style="display: none">
+			<input id="edgeVxOffset" type="range" step=0.01 min="0" max="5" style='width:30%'  oninput='APP.edgeVxOffset = $(this).val(); update_screen();'> Edge Offset1<br>
+			<input id="edgeVxOffset2" type="range" step=0.01 min="0" max="5" style='width:30%'  oninput='APP.edgeVxOffset2 = $(this).val(); update_screen();'> Edge Offset2<br>
+		</div>
+		<div id="highlight_shadow" style="display: none">
+			<input id="highlightShadowHighlight" type="range" step=0.01 min="0" max="10" style='width:30%' oninput='APP.highlightShadowHighlight = $(this).val(); update_screen();'> Highlight <br>
+			<input id="highlightShadowShadow" type="range" step=0.01 min="0" max="10" style='width:30%' oninput='APP.highlightShadowShadow = $(this).val(); update_screen();'> Shadow <br>
+		</div>
+		<div id="vignette" style="display: none">
+			<input id="vignetteRadius" type="range" step=0.01 min="0" max="0.7" style='width:30%'  oninput='APP.vignetteStart = $(this).val(); update_screen();'> Radius<br>
+			<input id="vignetteDispersion" type="range" step=0.01 min="0.01" max="1" style='width:30%'  oninput='APP.vignetteRange = $(this).val(); update_screen();'> Dispersion<br>
+			<input id="vignetteColor" onchange="APP.vignetteColor = hex_to_rgb($(this).val()); update_screen();" value="#000000" type="color"> Color<br>
+		</div>		
+		<div id="sharpen" style="display: none">
+			<input id="sharpenAmount" type="range" step=0.01 min="0" max="10" style='width:30%' oninput='APP.sharpenAmount = $(this).val(); update_screen();'> Sharpen Amount <br>
+		</div>	
+		<div id="denoise" style="display: none">
+			<input id="denoiseExponent" type="range" step=0.01 min="0" max="30" style='width:30%' oninput='APP.denoiseExponent = $(this).val(); update_screen();'> Exponent <br>
+		</div>
+		<div id="radial_wave" style="display: none">
+			<input id="radialWaveAmplitude" type="range" step=0.01 min="0" max="0.3" style='width:30%' value='0.1' oninput='APP.radialWaveAmplitude = $(this).val(); update_screen();'> Wave Amplitude <br>
+			<input id="radialWaveLength" type="range" min="0.05" max="0.5" step=0.001 style='width:30%' value='0.05' oninput='APP.radialWaveLength = $(this).val(); update_screen();'> Wave Length <br>
+		</div>
+		<div id="toon" style="display: none">
+			<input id="toonEdgeThreshold" type="range" step=0.01 min="0" max="1.4" style='width:30%' value='0.2' oninput='APP.toonEdgeThreshold = $(this).val(); update_screen();'> Edge Threshold <br>
+		</div>
+		<div id="toon_2" style="display: none">
+			<input id="toon2EdgeThreshold" type="range" step=0.01 min="0" max="1.4" style='width:30%' value='0.2' oninput='APP.toon2EdgeThreshold = $(this).val(); update_screen();'> Edge Threshold <br>
+		</div>
+		<div id="toon_greenish" style="display: none">
+			<input id="toonGreenishEdgeThreshold" type="range" step=0.01 min="0" max="1.4" style='width:30%' value='0.2' oninput='APP.toonGreenishEdgeThreshold = $(this).val(); update_screen();'> Edge Threshold <br>
+		</div>
+		<div id="a_sketch" style="display: none">
+			<input id="aSketchSharpness" type="range" step=0.01 min="0" max="1.4" style='width:30%' value='0.2' oninput='APP.aSketchSharpness = $(this).val(); update_screen();'> Sharpness <br>
+		</div>
+		<div id="a_sketch2" style="display: none">
+			<input id="aSketch2Sharpness" type="range" step=0.01 min="0" max="1.0" style='width:30%' value='0.2' oninput='APP.aSketch2Sharpness = $(this).val(); update_screen();'> Edge Threshold <br>
+			<input id="aSketch2Val1" type="range" step=0.01 min="0" max="1" style='width:30%' oninput='APP.aSketch2Val1 = $(this).val(); update_screen();'> Value 1 <br>
+			<input id="aSketch2Val2" type="range" step=0.01 min="0" max="1" style='width:30%' oninput='APP.aSketch2Val2 = $(this).val(); update_screen();'> Value 2 <br>
+			<input id="aSketch2Val3" type="range" step=0.01 min="0" max="1" style='width:30%' oninput='APP.aSketch2Val3 = $(this).val(); update_screen();'> Value 3 <br>
+		</div>
+		<div id="focus_blur" style="display: none">
+			<input id="focusBlurDistance" type="range" min="0" max="3" step=0.1 style='width:30%' oninput='APP.focusBlurDistance = $(this).val(); update_screen();'> Blur Distance <br>
+			<input id="focusBlurStrength" type="range" step=0.1 min="0" max="4" style='width:30%' oninput='APP.focusBlurStrength = $(this).val(); update_screen();'> Blur Strength <br>
+		</div>
+		<div id="blur" style="display: none">
+			<input id="blurStrengthHorizontal" type="range" min="0" max="6" step=0.1 style='width:30%' oninput='APP.blurStrengthHorizontal = $(this).val(); update_screen();'> Horizontal Blur Strength <br>
+			<input id="blurStrengthVertical" type="range" min="0" max="6" step=0.1 style='width:30%' oninput='APP.blurStrengthVertical = $(this).val(); update_screen();'> Vertical Blur Strength <br>
+		</div>
+		<div id="triangle_blur" style="display: none">
+			<input id="triangleBlurDeltaHorizontal" type="range" min="0" max="0.5" step=0.01 style='width:30%' oninput='APP.triangleBlurDeltaHorizontal = $(this).val(); update_screen();'> Horizontal Delta <br>
+			<input id="triangleBlurDeltaVertical" type="range" min="0" max="0.5" step=0.01 style='width:30%' oninput='APP.triangleBlurDeltaVertical = $(this).val(); update_screen();'> Vertical Delta <br>
+		</div>
+		<div id="basic" style="display: none">
+			<input id="brightness" type="range" step=0.01 min="-0.7" max="0.7" style='width:30%' value='0' oninput='APP.brightness = $(this).val(); update_screen();'> Brightness <br>
+			<input id="contrast" type="range" step=0.01 min="0" max="5" style='width:30%' value='1' oninput='APP.contrast = $(this).val(); update_screen();'> Contrast <br>
+			<input id="gamma" type="range" step=0.01 min="0" max="5" style='width:30%' value='1' oninput='APP.gamma = $(this).val(); update_screen();'> Gamma <br>
+			<input id="hueShift" type="range" step=0.01 min="0" max="1" style='width:30%' oninput='APP.hueShift = $(this).val(); update_screen();'> Hue Shift <br>
+			<input id="redChannel" type="range" step=0.01 min="0" max="1" style='width:30%' value='1' oninput='APP.redChannel = $(this).val(); update_screen();'> Red Channel <br>
+			<input id="greenChannel" type="range" step=0.01 min="0" max="1" style='width:30%' value='1' oninput='APP.greenChannel = $(this).val(); update_screen();'> Green Channel <br>
+			<input id="blueChannel" type="range" step=0.01 min="0" max="1" style='width:30%' value='1' oninput='APP.blueChannel = $(this).val(); update_screen();'> Blue Channel <br>
+		</div>
+		<div id="lighted" style="display: none">
+			<input id="xLightPosControl" type="range" min="-500" max="1524" style='width:30%' value='500' oninput='APP.lightPosition[0] = $(this).val(); update_screen();'> Light X-position <br>
+			<input id="yLightPosControl" type="range" min="-500" max="1524" style='width:30%' value='500' oninput='APP.lightPosition[1] = $(this).val(); update_screen();'> Light Y-position <br>
+			<input id="zLightPosControl" type="range" min="-500" max="1000" style='width:30%' value='500' oninput='APP.lightPosition[2] = $(this).val(); update_screen();'> Light Z-position <br>
+			
+			<input id="materialShininessControl" type="range" min="1" max="50" style='width:30%' value='7' oninput='APP.materialShininess = parseFloat($(this).val()); update_screen();'> Image Shininess<br>
+			<input id="lightAmbientPicker" onchange="APP.lightAmbient = hex_to_rgb($(this).val()); update_screen();" value="#262626" type="color"> Light Ambient Color<br>
+			<input id="lightDiffusePicker" onchange="APP.lightDiffuse = hex_to_rgb($(this).val()); update_screen();" value="#c0c0c0" type="color"> Light Diffuse Color<br>
+			<input id="lightSpecularPicker" onchange="APP.lightSpecular = hex_to_rgb($(this).val()); update_screen();" value="#ffffff" type="color"> Light Specular Color
+			<input id="doSpecularCalculationCheck" type="checkbox" onchange="APP.doSpecularCalculation= $(this).is(':checked') ? 1 : 0; update_screen();" checked><br>
+		</div>
+		<div id="twirl" style="display: none">
+			<input id="twirlAmount" type="range" min="-3" max="3" step=0.01 style='width:30%' value='0' oninput='APP.twirlAmount = $(this).val(); update_screen();'> Twirl Amount <br>
+			<input id="twirlRadius" type="range" step=0.01 min="0" max="1" style='width:30%' value='0.5' oninput='APP.twirlRadius = $(this).val(); update_screen();'> Twirl Radius <br>
+		</div>
+		<div id="fish_eye" style="display: none">
+			<input id="fishEyeAperture" type="range" min="0" max="356" style='width:30%' value='178' oninput='APP.fishEyeAperture = $(this).val(); update_screen();'> Aperture Size <br>
+		</div>
+		<div id="mirror" style="display: none">
+			<input id="mirrorAngle" type="range" min="0" max="360" style='width:30%' oninput='APP.mirrorAngle = $(this).val(); update_screen();'> Mirror Angle <br>
+		</div>
+		<div id="barrel_distortion" style="display: none">
+			<input id="barrelPower" type="range" min="0.2" max="4" step=0.01 style='width:30%' value='1' oninput='APP.barrelPower = $(this).val(); update_screen();'> Barrel Distortion <br>
+		</div>
+		<div id="grey_scale" style="display: none">
+			<input id="HSVPointer" type="range" step=0.01 min="0" max="1" style='width:30%' value='0' oninput='APP.HSVPointer = $(this).val(); update_screen();'> HSV Pointer <br>
+			<input id="HSVWidth" type="range" step=0.01 min="0" max="1" style='width:30%' value='0' oninput='APP.HSVWidth = $(this).val(); update_screen();'> HSV Width <br>
+			<input id="greyScaleRedChannel" type="range" step=0.01 min="0" max="1" style='width:30%' value='1' oninput='APP.greyScaleRedChannel = $(this).val(); update_screen();'> Red Channel <br>
+			<input id="greyScaleGreenChannel" type="range" step=0.01 min="0" max="1" style='width:30%' value='1' oninput='APP.greyScaleGreenChannel = $(this).val(); update_screen();'> Green Channel <br>
+			<input id="greyScaleBlueChannel" type="range" step=0.01 min="0" max="1" style='width:30%' value='1' oninput='APP.greyScaleBlueChannel = $(this).val(); update_screen();'> Blue Channel <br>
+		</div>
+		<div id="frame" style="display: none">
+			<select id='frameTexture' style="width: 15%" onchange="APP.frameTexture = $(this).val(); update_screen();">
+				<option value="arrow_frame">Arrow</option>
+			</select> Frame<br>	
+		</div>
+		<div id="sketch" style="display: none">
+			<select id='sketchTexture' style="width: 15%" onchange="APP.sketchTexture = $(this).val(); update_screen();">
+				<option value="sketch1_overlay">Sketch 1</option>
+				<option value="sketch2_overlay">Sketch 2</option>
+				<option value="sketch3_overlay">Sketch 3</option>
+				<option value="blue_overlay">Blue</option>
+				<option value="brush_overlay">Brush</option>
+				<option value="canvas_overlay">Canvas</option>
+				<option value="shadow_overlay">Shadow</option>
+				<option value="water_overlay">Water</option>
+				<option value="lookup_poster_overlay">Lookup Poster</option>
+				<option value="sketch1_overlay-0">Sketch 1 - 0</option>
+				<option value="sketch1_overlay-1">Sketch 1 - 1</option>
+				<option value="sketch1_overlay-2">Sketch 1 - 2</option>
+				<option value="sketch1_overlay-3">Sketch 1 - 3</option>
+				<option value="sketch2_overlay-0">Sketch 2 - 0</option>
+				<option value="sketch2_overlay-1">Sketch 2 - 1</option>
+				<option value="sketch2_overlay-2">Sketch 2 - 2</option>
+				<option value="sketch2_overlay-3">Sketch 2 - 3</option>
+				<option value="canvas_overlay-0">Canvas - 0</option>
+				<option value="canvas_overlay-1">Canvas - 1</option>
+				<option value="canvas_overlay-2">Canvas - 2</option>
+				<option value="canvas_overlay-3">Canvas - 3</option>
+				<option value="shadows_overlay-0">Shadow - 0</option>
+				<option value="shadows_overlay-1">Shadow - 1</option>
+				<option value="shadows_overlay-2">Shadow - 2</option>
+				<option value="shadows_overlay-3">Shadow - 3</option>
+				<option value="brush_overlay-0">Brush - 0</option>
+				<option value="brush_overlay-1">Brush - 1</option>
+				<option value="brush_overlay-2">Brush - 2</option>
+				<option value="brush_overlay-3">Brush - 3</option>
+				<option value="water_overlay-0">Water - 0</option>
+				<option value="water_overlay-1">Water - 1</option>
+				<option value="water_overlay-2">Water - 2</option>
+				<option value="water_overlay-3">Water - 3</option>
+				<option value="blue_overlay-0">Blue - 0</option>
+				<option value="blue_overlay-1">Blue - 1</option>
+				<option value="blue_overlay-2">Blue - 2</option>
+				<option value="blue_overlay-3">Blue - 3</option>
+			</select> Texture<br>		
+			<select id='sketchShader' style="width: 15%" onchange="APP.sketchShader = $(this).val(); update_screen();">
+				<option value="0">0</option>
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+				<option value="4">4</option>
+				<option value="5">5</option>
+				<option value="6">6</option>
+				<option value="7">7</option>
+				<option value="8">8</option>
+				<option value="9">9</option>
+				<option value="10">10</option>
+				<option value="11">11</option>
+				<option value="12">12</option>
+				<option value="13">13</option>
+				<option value="14">14</option>
+			</select> Shader<br>	
+		</div>
+		<div id="effects" style="display: none">
+			<select id='effectsShader' style="width: 15%" onchange="APP.effectsShader = $(this).val(); update_screen();">
+				<option value="0">American</option>
+				<option value="1">Comics</option>
+				<option value="2">Dots</option>
+				<option value="3">Frosted</option>
+				<option value="4">Halftone</option>
+				<option value="5">Oilflow</option>
+				<option value="6">Points</option>
+				<option value="7">Shadows</option>
+				<option value="8">Sigmoid</option>
+				<option value="9">Warhol</option>
+				<option value="10">BW</option>
+			</select> Shader<br>	
+		</div>
+		<div id="overlay" style="display: none">
+			<input id="overlayAmount" type="range" min="0" max="1" step=0.01 style='width:30%' oninput='APP.overlayAmount = $(this).val(); update_screen();'> Amount<br>
+			<select id='overlayTexture' style="width: 15%" onchange="APP.overlayTexture = $(this).val(); update_screen();">
+				<option value="sketch1_overlay-0">Sketch 1 - 0</option>
+				<option value="sketch1_overlay-1">Sketch 1 - 1</option>
+				<option value="sketch1_overlay-2">Sketch 1 - 2</option>
+				<option value="sketch1_overlay-3">Sketch 1 - 3</option>
+				<option value="sketch2_overlay-0">Sketch 2 - 0</option>
+				<option value="sketch2_overlay-1">Sketch 2 - 1</option>
+				<option value="sketch2_overlay-2">Sketch 2 - 2</option>
+				<option value="sketch2_overlay-3">Sketch 2 - 3</option>
+				<option value="canvas_overlay-0">Canvas - 0</option>
+				<option value="canvas_overlay-1">Canvas - 1</option>
+				<option value="canvas_overlay-2">Canvas - 2</option>
+				<option value="canvas_overlay-3">Canvas - 3</option>
+				<option value="shadows_overlay-0">Shadow - 0</option>
+				<option value="shadows_overlay-1">Shadow - 1</option>
+				<option value="shadows_overlay-2">Shadow - 2</option>
+				<option value="shadows_overlay-3">Shadow - 3</option>
+				<option value="brush_overlay-0">Brush - 0</option>
+				<option value="brush_overlay-1">Brush - 1</option>
+				<option value="brush_overlay-2">Brush - 2</option>
+				<option value="brush_overlay-3">Brush - 3</option>
+				<option value="water_overlay-0">Water - 0</option>
+				<option value="water_overlay-1">Water - 1</option>
+				<option value="water_overlay-2">Water - 2</option>
+				<option value="water_overlay-3">Water - 3</option>
+				<option value="blue_overlay-0">Blue - 0</option>
+				<option value="blue_overlay-1">Blue - 1</option>
+				<option value="blue_overlay-2">Blue - 2</option>
+				<option value="blue_overlay-3">Blue - 3</option>
+			</select> Texture<br>
+			<select id='overlayMode' style="width: 15%" onchange="APP.overlayMode = $(this).val(); update_screen();">
+				<option value="0">Add</option>
+				<option value="1">Subtract</option>
+				<option value="2">Multiply</option>
+				<option value="3">Blend</option>
+				<option value="4">Materialize</option>
+			</select> Mode
+		</div>
+		
+		<div id="image1" style="display: none">Image1: <input id="image1Url" value="reflect.jpg" type="text"/></div><br>
+		<br><button onclick="load_images(); update_screen();">LOAD</button>
+	</body>
+</html>

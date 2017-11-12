@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="author" content="Aiman Al-Eryani" />
+
+    <script src="js/jquery.min.js"></script>
+    <script src="js/sylvester.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/three.min.js"></script>
+    <script src="js/OrbitControls.js"></script>
+  </head>
+
+  <body onload="init()">
+    <div id="container"></div>
+        <br>
+    <Button id="repeat" onclick="reset_parameters()" />Refresh</button>
+    <br>
+    Particle count: <span id="ion_countl">1000</span><input id="ion_count" type="range" min="10" max="5000" step="10" value="1000" onchange="onchange_count(this);onchange_life();">
+    <br>
+    Ion mass [2.180x10^-25 kg]: <span id="massl">1</span><input id="mass" type="range" min="0.1" max="5" step="0.1" value="1" onchange="onchange_mass(this)">
+    <br>
+    Ion delta angle [degrees]: <span id="anglel">20</span><input id="angle" type="range" min="0" max="90" step="1" value="20" onchange="onchange_angle(this)">
+    <br>
+    Ion charge [1.602x10^-19 As]: <span id="chargel">1</span><input id="charge" type="range" min="0.1" max="5" step="0.1" value="1" onchange="onchange_charge(this)">
+    Ions speed [1.841x10^3 m/s]: <span id="velocitiesl">8</span><input id="velocities" type="range" min="0.1" max="12" step="0.1" value="8" onchange="onchange_velocities(this)">
+    <br>
+    Mass flowrate [2.38x10^-7 kg/sec]: <span id="massflowl">100</span><input id="massflow" type="range" min="10" max="200" step="1" value="100" onchange="onchange_life(this)">
+    Aperature radius [0.25x10^-4 m]: <span id="aperaturel">50</span><input id="aperature" type="range" min="20" max="300" step="10" value="50" onchange="onchange_aperature(this)">
+    <br>
+    Lens length [0.25x10^-4 m]: <span id="lenslengthl">100</span><input id="lenslength" type="range" min="1" max="1000" step="1" value="100" onchange="onchange_lenslength(this)">
+    <br>
+    Lens number of coil turns [05x10^2]: <span id="turnsl">1000</span><input id="turns" type="range" min="100" max="100000" step="10" value="1000" onchange="onchange_turns(this)">
+    <br>
+    Lens Visible: <input id="islensvisible" type="checkbox" onchange="handle_lensvisible()">
+    <br>
+  </body>
+</html>
+
+
+
+
+
+
